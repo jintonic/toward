@@ -1,2 +1,2 @@
-# gee
-gee - germanium experiment
+# wage
+wage - waveform analysis toolkit for germanium detectors
