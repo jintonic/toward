@@ -2,7 +2,7 @@
 using namespace std;
 #include "Pulse.h"
 
-using namespace GEE;
+using namespace WAGE;
 
 Pulse::Pulse(const Pulse& pls) : TObject(pls),
    bgn(pls.bgn),

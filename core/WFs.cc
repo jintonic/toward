@@ -12,7 +12,7 @@ using namespace UNIC;
 
 #include "WF.h"
 #include "WFs.h"
-using namespace GEE;
+using namespace WAGE;
 
 //------------------------------------------------------------------------------
 
@@ -22,13 +22,13 @@ void WFs::Initialize(const char* db)
    struct stat st;
    if (stat(db,&st)!=0) { // if not exist
       Info("Initialize", "cannot open %s", db);
-      Info("Initialize", "check $GEESYS");
-      const char *root = gSystem->Getenv("GEESYS");
+      Info("Initialize", "check $WAGESYS");
+      const char *root = gSystem->Getenv("WAGESYS");
       if (root==0) {
-         Warning("Initialize", "$GEESYS is not set, return");
+         Warning("Initialize", "$WAGESYS is not set, return");
          return;
       }
-      Info("Initialize", "$GEESYS=%s",root);
+      Info("Initialize", "$WAGESYS=%s",root);
       fDB=root;
 
       if (fDB.EndsWith("/")) fDB+="electrode/";
@@ -44,7 +44,7 @@ void WFs::Initialize(const char* db)
       return;
    }
 
-   wf.SetClass("GEE::WF",nch);
+   wf.SetClass("WAGE::WF",nch);
    for (Int_t i=0; i<n; i++) {
       if (ch[i]->d_name[0]=='.' || i>=nch+2) {
          free(ch[i]);
@@ -53,12 +53,12 @@ void WFs::Initialize(const char* db)
 
       WF *aWF = Map(atoi(ch[i]->d_name));
       if (aWF) {
-         if (aWF->electrode.id>=0) {
+         if (aWF->ode.id>=0) {
             LoadTimeOffset(aWF);
             LoadVoltage(aWF);
             LoadStatus(aWF);
          }
-         aWF->electrode.Dump();
+         aWF->ode.Dump();
       }
 
       free(ch[i]);
@@ -99,8 +99,8 @@ WF* WFs::Map(int ch)
       return 0;
    }
 
-   aWF->electrode.ch = ch;
-   aWF->electrode.id = id;
+   aWF->ode.ch = ch;
+   aWF->ode.id = id;
    return aWF;
 }
 
@@ -113,10 +113,10 @@ void WFs::LoadTimeOffset(WF* aWF)
       return;
    }
 
-   ifstream file(Form("%s/%d/dt.txt", fDB.Data(), aWF->electrode.ch));
+   ifstream file(Form("%s/%d/dt.txt", fDB.Data(), aWF->ode.ch));
    if (!(file.is_open())) {
       Error("LoadTimeOffset", "cannot read %s/%d/dt.txt", 
-            fDB.Data(), aWF->electrode.ch);
+            fDB.Data(), aWF->ode.ch);
       Error("LoadTimeOffset", "return");
       return;
    }
@@ -125,7 +125,7 @@ void WFs::LoadTimeOffset(WF* aWF)
    double dt;
    while (file>>runnum>>dt) {
       if (run<runnum) continue;
-      aWF->electrode.dt = dt*ns;
+      aWF->ode.dt = dt*ns;
       break;
    }
 
@@ -141,10 +141,10 @@ void WFs::LoadVoltage(WF* aWF)
       return;
    }
 
-   ifstream file(Form("%s/%d/voltage.txt", fDB.Data(), aWF->electrode.ch));
+   ifstream file(Form("%s/%d/voltage.txt", fDB.Data(), aWF->ode.ch));
    if (!(file.is_open())) {
       Error("LoadVoltage", "cannot read %s/%d/voltage.txt",
-            fDB.Data(), aWF->electrode.ch);
+            fDB.Data(), aWF->ode.ch);
       Error("LoadVoltage", "return");
       return;
    }
@@ -153,7 +153,7 @@ void WFs::LoadVoltage(WF* aWF)
    double voltage;
    while (file>>runnum>>voltage) {
       if (run<runnum) continue;
-      aWF->electrode.v = voltage;
+      aWF->ode.v = voltage;
       break;
    }
 
@@ -169,10 +169,10 @@ void WFs::LoadStatus(WF* aWF)
       return;
    }
 
-   ifstream file(Form("%s/%d/status.txt", fDB.Data(), aWF->electrode.ch));
+   ifstream file(Form("%s/%d/status.txt", fDB.Data(), aWF->ode.ch));
    if (!(file.is_open())) {
       Error("LoadStatus", "cannot read %s/%d/status.txt",
-            fDB.Data(), aWF->electrode.ch);
+            fDB.Data(), aWF->ode.ch);
       Error("LoadStatus", "return");
       return;
    }
@@ -181,7 +181,7 @@ void WFs::LoadStatus(WF* aWF)
    TString st;
    while (file>>runnum>>st) {
       if (run<runnum) continue;
-      aWF->electrode.SetStatus(st);
+      aWF->ode.SetStatus(st);
       break;
    }
 

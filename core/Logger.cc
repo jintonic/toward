@@ -1,5 +1,5 @@
 #include "Logger.h"
-using namespace GEE;
+using namespace WAGE;
 
 int Logger::gVerbosity = 0;
 

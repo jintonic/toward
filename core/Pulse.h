@@ -3,9 +3,9 @@
 
 #include <TObject.h>
 
-namespace GEE { class Pulse; }
+namespace WAGE { class Pulse; }
 
-class GEE::Pulse : public TObject
+class WAGE::Pulse : public TObject
 {
    public:
       enum {

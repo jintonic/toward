@@ -2,7 +2,7 @@
 
 #include "WF.h"
 
-using namespace GEE;
+using namespace WAGE;
 
 bool WF::IsSimilarTo(const WF& other) const
 {

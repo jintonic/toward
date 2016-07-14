@@ -5,7 +5,7 @@ using namespace std;
 using namespace UNIC;
 
 #include "Electrode.h"
-using namespace GEE;
+using namespace WAGE;
 
 void Electrode::SetStatus(const char* status)
 {

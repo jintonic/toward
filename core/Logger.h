@@ -1,9 +1,9 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-namespace GEE { class Logger; }
+namespace WAGE { class Logger; }
 
-class GEE::Logger
+class WAGE::Logger
 {
    public:
       static int gVerbosity; ///< global verbosity

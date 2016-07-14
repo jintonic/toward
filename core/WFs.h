@@ -3,7 +3,7 @@
 
 #include <TClonesArray.h>
 
-namespace GEE {
+namespace WAGE {
    class WF;
    class WFs;
 }
@@ -16,10 +16,10 @@ namespace GEE {
  *
  * It loads electrode database to initialize the TClonesArray of empty
  * waveforms with electrode information. Loading database is done here instead
- * of in the GEE::Electrode class to avoid passing run, file name and location
- * to GEE::Electrode.
+ * of in the WAGE::Electrode class to avoid passing run, file name and location
+ * to WAGE::Electrode.
  */
-class GEE::WFs : public TObject
+class WAGE::WFs : public TObject
 {
    private:
       WF* Map(int ch); ///< map ch to WF::electrode

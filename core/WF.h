@@ -6,7 +6,7 @@
 #include "Electrode.h"
 #include "Pulse.h"
 
-namespace GEE { class WF; }
+namespace WAGE { class WF; }
 /**
  * Waveform information.
  *
@@ -17,7 +17,7 @@ namespace GEE { class WF; }
  * Nested TClonesArray cannot be split and loose all benifit of TClonesArray:
  * http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=910
  */
-class GEE::WF : public TObject
+class WAGE::WF : public TObject
 {
    public:
       enum {

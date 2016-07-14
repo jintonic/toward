@@ -3,13 +3,13 @@
 
 #include <TObject.h>
 
-namespace GEE { class Electrode; }
+namespace WAGE { class Electrode; }
 /**
  * Electrode information
  * It inherits Info(), Warning(), etc. functions from TObject to dump
- * information in terminal with <GEE::Electrode::Function> prefixed.
+ * information in terminal with <WAGE::Electrode::Function> prefixed.
  */
-class GEE::Electrode: public TObject
+class WAGE::Electrode: public TObject
 {
    public:
       enum Status {
@@ -24,7 +24,7 @@ class GEE::Electrode: public TObject
       Status st; // Electrode status
       /**
        * Electrode id
-       * loaded from $GEESYS/cfg/?/mapping.txt in WFs::Initialize()
+       * loaded from $WAGE/cfg/?/mapping.txt in WFs::Initialize()
        * - id >= 0: normal electrode
        * - id == -1: empty channel
        * - id == -10: coincidence

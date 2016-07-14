@@ -1,7 +1,7 @@
 PREFIX=$(HOME)
 UNIC=$(HOME)
 
-LIBNAME=GEE
+LIBNAME=WAGE
 
 # Define CXX, CXXFLAGS, SOFLAGS & LIBS
 # ====================================
