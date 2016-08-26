@@ -133,9 +133,11 @@ int WF::GussG()
   int maxdeltalocation;
   for(int i=0;i<(int)smpl.size()-1;i++)
   {
-    if(std::abs(smpl[i]-smpl[i+1])>maxdelta)
+    double delta=smpl[i]-smpl[i+1];
+    if (delta<0)delta=-delta;
+    if(delta>maxdelta)
     {
-      maxdelta=smpl[i]-smpl[i+1];
+      maxdelta=delta;
       maxdeltalocation=i;
     }
   }
