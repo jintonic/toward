@@ -68,6 +68,7 @@ class WAGE::WF : public TObject
 
       bool IsSimilarTo(const WF& other) const;
       void MakeSimilarTo(const WF& other);
+      std::vector<double> Filter(double L=-1,double G=-1);
 
       WF& operator+=(const WF& other); 
       WF& operator-=(const WF& other); 
