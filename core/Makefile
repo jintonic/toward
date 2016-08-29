@@ -52,7 +52,7 @@ endif
 CXXFLAGS+= -I$(UNIC)/include
 
 # Finally, define CXXFLAGS & LIBS
-CXXFLAGS+= $(ROOTCFLAGS)
+CXXFLAGS+= $(subst -std=c++11,,$(ROOTCFLAGS))
 CXXFLAGS+= -g
 LIBS    += $(ROOTLIBS)
 

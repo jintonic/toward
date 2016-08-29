@@ -122,15 +122,8 @@ void WF::Reset()
 
 int WF::GussL()
 {
-  return 20;
-} 
-
-//------------------------------------------------------------------------------
-#include <stdlib.h> 
-int WF::GussG()
-{
   double maxdelta=0;
-  int maxdeltalocation;
+  int maxdeltalocation=0;
   for(int i=0;i<(int)smpl.size()-1;i++)
   {
     double delta=smpl[i]-smpl[i+1];
@@ -144,15 +137,38 @@ int WF::GussG()
   int gusstheend=maxdeltalocation;
   int gussthebegin=maxdeltalocation;
   while(smpl[gusstheend+1]>smpl[gusstheend])gusstheend++;
-  while(smpl[gussthebegin-1]<smpl[gussthebegin])gusstheend--;
+  while(smpl[gussthebegin-1]<smpl[gussthebegin])gussthebegin--;
+  return (gussthebegin-GussG())/2;
+} 
+
+//------------------------------------------------------------------------------
+#include <stdlib.h> 
+int WF::GussG()
+{
+  double maxdelta=0;
+  int maxdeltalocation=0;
+  for(int i=0;i<(int)smpl.size()-1;i++)
+  {
+    double delta=smpl[i]-smpl[i+1];
+    if (delta<0)delta=-delta;
+    if(delta>maxdelta)
+    {
+      maxdelta=delta;
+      maxdeltalocation=i;
+    }
+  }
+  int gusstheend=maxdeltalocation;
+  int gussthebegin=maxdeltalocation;
+  while(smpl[gusstheend+1]>smpl[gusstheend])gusstheend++;
+  while(smpl[gussthebegin-1]<smpl[gussthebegin])gussthebegin--;
   return gusstheend-gussthebegin;
 }
 
 //------------------------------------------------------------------------------
 std::vector<double> WF::Filter(int L,int G)
 {
-  if(L==-1)L=5;
-  if(G==-1)G=5;
+  if(L==-1)L=GussL();
+  if(G==-1)G=GussG()*2;
   int n=smpl.size();
   if(2*L+G>n)
   {
@@ -168,7 +184,7 @@ std::vector<double> WF::Filter(int L,int G)
       int m=mid.size();
       if (m-i<0)break;
       mid[m-i-1]+=smpl[n];
-      if(i==L-1)mid[m-i-1]=mid[m-i-1]/L;
+      if(i==L-1)mid[m-i]=mid[m-i-1]/L;
     }
   }
   for(int i=0;i<L-1;i++)mid.pop_back();
