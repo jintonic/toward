@@ -182,12 +182,12 @@ std::vector<double> WF::Filter(int L,int G)
     for(int i=0;i<L;i++)
     {
       int m=mid.size();
-      if (m-i<0)break;
+      if (m-i<=0)break;
       mid[m-i-1]+=smpl[n];
-      if(i==L-1)mid[m-i]=mid[m-i-1]/L;
     }
   }
   for(int i=0;i<L-1;i++)mid.pop_back();
+  for(int i=0;i<(int)mid.size();i++)mid[i]=mid[i]/L;
   std::vector<double> needed;
   for (int i=0;i<n-2*L-G;i++)needed.push_back(mid[i+G+L]-mid[i]);
   return needed;
