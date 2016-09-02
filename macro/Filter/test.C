@@ -10,14 +10,14 @@ void test()
   for(int i=0;i<5;i++)wf->smpl.push_back(i);
   for (int i=0;i<50;i++)wf->smpl.push_back(5);
   for(int i=0;i<wf->smpl.size();i++)wf->smpl[i]+=r->Gaus();
-  vector<double> out=wf->Filter();
+  vector<double> out=wf->FT();
   int n=106;
   double x[106],y[106];
   for(int i=0;i<n;i++){
     x[i]=out[i];
     y[i]=i;
   }
-  cout<<"here"<<endl;
+  cout<<x[2]<<endl;
   //for(int i=0;i<out.size();i++)y.push_back(i);
   TGraph *g=new TGraph(out.size(),y,x);
   g->Draw("AC*");

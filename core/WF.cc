@@ -192,3 +192,24 @@ std::vector<double> WF::Filter(int L,int G)
   for (int i=0;i<n-2*L-G;i++)needed.push_back(mid[i+G+L]-mid[i]);
   return needed;
 }
+//------------------------------------------------------------------------------
+#include <cmath>
+#include <iostream>
+using namespace std;
+std::vector<double> WF::FT()
+{
+  std::vector<double> needed=Filter();
+  std::vector<double> out; 
+  for(int i=0;i<(int)needed.size();i++)
+  {
+    double xk=0;
+    for(int j=0;j<(int)needed.size()-1;j++)
+    {
+      double po=pow(-1,2.0/(double)needed.size()*i*j);
+      if (!(po==1||po==-1))po=-1; 
+      xk+=po*needed[j];
+    }
+    out.push_back(xk);
+  }
+  return out;
+}
