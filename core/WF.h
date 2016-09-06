@@ -5,6 +5,7 @@
 
 #include "Electrode.h"
 #include "Pulse.h"
+#include <TGraph.h>
 
 namespace WAGE { class WF; }
 /**
@@ -68,8 +69,11 @@ class WAGE::WF : public TObject
 
       bool IsSimilarTo(const WF& other) const;
       void MakeSimilarTo(const WF& other);
-      std::vector<double> Filter(int L=-1,int G=-1);
-      std::vector<double> FT();
+      double GetTrapozoidE(int L,int G,WF *out);
+      WF * T2F();
+      void F2T(WF * wf);
+      void AddNoise(int s);
+      void Draw(Option_t *chopt);
       
       int GussL();
       int GussG();

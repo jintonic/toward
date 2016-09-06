@@ -138,7 +138,7 @@ int WF::GussL()
   int gussthebegin=maxdeltalocation;
   while(smpl[gusstheend+1]>smpl[gusstheend])gusstheend++;
   while(smpl[gussthebegin-1]<smpl[gussthebegin])gussthebegin--;
-  return (gussthebegin-GussG())/2;
+  return (gussthebegin-GussG())/4;
 } 
 
 //------------------------------------------------------------------------------
@@ -161,11 +161,11 @@ int WF::GussG()
   int gussthebegin=maxdeltalocation;
   while(smpl[gusstheend+1]>smpl[gusstheend])gusstheend++;
   while(smpl[gussthebegin-1]<smpl[gussthebegin])gussthebegin--;
-  return gusstheend-gussthebegin;
+  return (gusstheend-gussthebegin)*10;
 }
 
 //------------------------------------------------------------------------------
-std::vector<double> WF::Filter(int L,int G)
+double WF::GetTrapozoidE(int L=-1,int G=-1,WF * out=NULL)
 {
   if(L==-1)L=GussL();
   if(G==-1)G=GussG()*2;
@@ -173,7 +173,7 @@ std::vector<double> WF::Filter(int L,int G)
   if(2*L+G>n)
   {
     Warning("Filter","too large Length or Gap");
-    return smpl;
+    return -1;
   }
   std::vector<double> mid;
   for (int n=0;n<(int)smpl.size();n++)
@@ -190,26 +190,79 @@ std::vector<double> WF::Filter(int L,int G)
   for(int i=0;i<(int)mid.size();i++)mid[i]=mid[i]/L;
   std::vector<double> needed;
   for (int i=0;i<n-2*L-G;i++)needed.push_back(mid[i+G+L]-mid[i]);
-  return needed;
+  if(out)
+  {
+    out->smpl=needed;
+  }
+  double max=needed[0],min=needed[0];
+  for(int i=0;i<needed.size();i++)
+  {
+    if(needed[i]>max)max=needed[i];
+    if(needed[i]<min)min=needed[i];
+  }
+    
+  return max-min;
 }
 //------------------------------------------------------------------------------
 #include <cmath>
 #include <iostream>
 using namespace std;
-std::vector<double> WF::FT()
+WF * WF::T2F()
 {
-  std::vector<double> needed=Filter();
+  std::vector<double> needed=smpl;
   std::vector<double> out; 
+  const double PI  =3.141592653589793238463;
   for(int i=0;i<(int)needed.size();i++)
   {
     double xk=0;
     for(int j=0;j<(int)needed.size()-1;j++)
     {
-      double po=pow(-1,2.0/(double)needed.size()*i*j);
-      if (!(po==1||po==-1))po=-1; 
+      double po=cos(-2*PI*i*j/needed.size());
       xk+=po*needed[j];
     }
     out.push_back(xk);
   }
-  return out;
+  WF * re=new WF();
+  re->smpl=out;
+  return re;
+}
+//------------------------------------------------------------------------------
+void WF::F2T(WF * wf)
+{
+  std::vector<double> needed=wf->smpl;
+  const double PI  =3.141592653589793238463;
+  for(int i=0;i<(int)needed.size();i++)
+  {
+    double xk=0;
+    for(int j=0;j<(int)needed.size()-1;j++)
+    {
+      double po=cos(-2*PI*i*j/needed.size());
+      xk+=po*needed[j];
+    }
+    smpl.push_back(xk/needed.size());
+  }
+}
+//------------------------------------------------------------------------------
+#include <TRandom3.h>
+void WF::AddNoise(int s)
+{
+  TRandom3 *r=new TRandom3();
+  for(int i=0;i<(int)smpl.size();i++)smpl[i]+=r->Gaus(0,s);
+}
+//------------------------------------------------------------------------------
+void WF::Draw(Option_t *chopt="")
+{
+  int n=smpl.size();
+  double *x,*y;
+  x=new double[n];
+  y=new double[n];
+  for(int i=0;i<n;i++){
+    x[i]=smpl[i];
+    y[i]=i;
+  }
+  TGraph *g=new TGraph(smpl.size(),y,x);
+  g->Draw(chopt);
+  delete []x;
+  delete []y;
+
 }
