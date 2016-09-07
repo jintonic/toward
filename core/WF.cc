@@ -161,7 +161,7 @@ int WF::GussG()
   int gussthebegin=maxdeltalocation;
   while(smpl[gusstheend+1]>smpl[gusstheend])gusstheend++;
   while(smpl[gussthebegin-1]<smpl[gussthebegin])gussthebegin--;
-  return (gusstheend-gussthebegin)*10;
+  return (gusstheend-gussthebegin)*5;
 }
 
 //------------------------------------------------------------------------------
@@ -195,7 +195,7 @@ double WF::GetTrapozoidE(int L=-1,int G=-1,WF * out=NULL)
     out->smpl=needed;
   }
   double max=needed[0],min=needed[0];
-  for(int i=0;i<needed.size();i++)
+  for(size_t i=0;i<needed.size();i++)
   {
     if(needed[i]>max)max=needed[i];
     if(needed[i]<min)min=needed[i];
