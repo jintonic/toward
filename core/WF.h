@@ -75,8 +75,8 @@ class WAGE::WF : public TObject
       void AddNoise(int s);
       void Draw(Option_t *chopt);
       
-      int GussL();
-      int GussG();
+      int GuessL();
+      int GuessG();
 
       WF& operator+=(const WF& other); 
       WF& operator-=(const WF& other); 

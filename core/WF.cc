@@ -120,7 +120,7 @@ void WF::Reset()
 
 //------------------------------------------------------------------------------
 
-int WF::GussL()
+int WF::GuessL()
 {
   double maxdelta=0;
   int maxdeltalocation=0;
@@ -138,13 +138,13 @@ int WF::GussL()
   int gussthebegin=maxdeltalocation;
   while(smpl[gusstheend+1]>smpl[gusstheend])gusstheend++;
   while(smpl[gussthebegin-1]<smpl[gussthebegin])gussthebegin--;
-  return (gussthebegin-GussG())/4;
+  return (gussthebegin-GuessG())/4;
 } 
 #include <iostream>
 using namespace std;
 //------------------------------------------------------------------------------
 #include <stdlib.h> 
-int WF::GussG()
+int WF::GuessG()
 {
   double maxslope=0;
   int gstart=0,gend=smpl.size()-1;
@@ -173,8 +173,8 @@ int WF::GussG()
 
 double WF::GetTrapozoidE(int L=-1,int G=-1,WF * out=NULL)
 {
-  if(L==-1)L=GussL();
-  if(G==-1)G=GussG()*2;
+  if(L==-1)L=GuessL();
+  if(G==-1)G=GuessG()*2;
   cout<<G<<endl;
   int n=smpl.size();
   if(2*L+G>n)
