@@ -140,35 +140,42 @@ int WF::GussL()
   while(smpl[gussthebegin-1]<smpl[gussthebegin])gussthebegin--;
   return (gussthebegin-GussG())/4;
 } 
-
+#include <iostream>
+using namespace std;
 //------------------------------------------------------------------------------
 #include <stdlib.h> 
 int WF::GussG()
 {
-  double maxdelta=0;
-  int maxdeltalocation=0;
-  for(int i=0;i<(int)smpl.size()-1;i++)
+  double maxslope=0;
+  int gstart=0,gend=smpl.size()-1;
+  int l=smpl.size()/10;
+  for(int i=l;i<smpl.size();i++)
   {
-    double delta=smpl[i]-smpl[i+1];
-    if (delta<0)delta=-delta;
-    if(delta>maxdelta)
+    if((smpl[i]-smpl[0])/i>maxslope)
     {
-      maxdelta=delta;
-      maxdeltalocation=i;
+      maxslope=(smpl[i]-smpl[0])/i;
+      gend=i;
     }
   }
-  int gusstheend=maxdeltalocation;
-  int gussthebegin=maxdeltalocation;
-  while(smpl[gusstheend+1]>smpl[gusstheend])gusstheend++;
-  while(smpl[gussthebegin-1]<smpl[gussthebegin])gussthebegin--;
-  return (gusstheend-gussthebegin)*5;
+  maxslope=0;
+  for(int i=smpl.size()-l;i-->0;)
+  {
+    if((smpl[smpl.size()-1]-smpl[i])/(smpl.size()-i)>maxslope)
+    {
+      maxslope=  (smpl[smpl.size()-1]-smpl[i])/(smpl.size()-i);
+      gstart=i;
+    }
+  }
+  return (gend-gstart);
 }
 
 //------------------------------------------------------------------------------
+
 double WF::GetTrapozoidE(int L=-1,int G=-1,WF * out=NULL)
 {
   if(L==-1)L=GussL();
   if(G==-1)G=GussG()*2;
+  cout<<G<<endl;
   int n=smpl.size();
   if(2*L+G>n)
   {
@@ -214,13 +221,15 @@ WF * WF::T2F()
   const double PI  =3.141592653589793238463;
   for(int i=0;i<(int)needed.size();i++)
   {
-    double xk=0;
+    double rxk=0;
+    double ixk=0;
     for(int j=0;j<(int)needed.size()-1;j++)
     {
-      double po=cos(-2*PI*i*j/needed.size());
-      xk+=po*needed[j];
+      double po=-2*PI*i*j/needed.size();
+      rxk+=cos(po)*needed[j];
+      ixk+=0;//-sin(po)*needed[j];
     }
-    out.push_back(xk);
+    out.push_back(pow(ixk,2)+pow(rxk,2));
   }
   WF * re=new WF();
   re->smpl=out;
@@ -234,6 +243,7 @@ void WF::F2T(WF * wf)
   for(int i=0;i<(int)needed.size();i++)
   {
     double xk=0;
+    
     for(int j=0;j<(int)needed.size()-1;j++)
     {
       double po=cos(-2*PI*i*j/needed.size());

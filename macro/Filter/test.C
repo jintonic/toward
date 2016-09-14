@@ -8,6 +8,8 @@ void test()
   wf->smpl.push_back(0);
   for(int i=0;i<50;i++)wf->smpl.push_back(i);
   for (int i=0;i<500;i++)wf->smpl.push_back(50);
+ cout<<wf->GussG()<<endl;; 
+  //for(int i=0;i<2000;i++)wf->smpl.push_back(cos((double)i/100));
   wf->Draw("Al");
   wf->AddNoise(1);
   wf->Draw("samel");
