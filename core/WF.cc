@@ -214,10 +214,9 @@ double WF::GetTrapozoidE(int L=-1,int G=-1,WF * out=NULL)
 #include <cmath>
 #include <iostream>
 using namespace std;
-WF * WF::T2F()
+void WF::T2F()
 {
   std::vector<double> needed=smpl;
-  std::vector<double> out; 
   const double PI  =3.141592653589793238463;
   for(int i=0;i<(int)needed.size();i++)
   {
@@ -227,13 +226,11 @@ WF * WF::T2F()
     {
       double po=-2*PI*i*j/needed.size();
       rxk+=cos(po)*needed[j];
-      ixk+=0;//-sin(po)*needed[j];
+      ixk+=-sin(po)*needed[j];
     }
-    out.push_back(pow(ixk,2)+pow(rxk,2));
+    Rft.push_back(rxk);
+    Ift.push_back(ixk);
   }
-  WF * re=new WF();
-  re->smpl=out;
-  return re;
 }
 //------------------------------------------------------------------------------
 void WF::F2T(WF * wf)
@@ -260,14 +257,16 @@ void WF::AddNoise(int s)
   for(int i=0;i<(int)smpl.size();i++)smpl[i]+=r->Gaus(0,s);
 }
 //------------------------------------------------------------------------------
-void WF::Draw(Option_t *chopt="")
+void WF::Draw(Option_t *chopt="",int j=0)
 {
   int n=smpl.size();
   double *x,*y;
   x=new double[n];
   y=new double[n];
   for(int i=0;i<n;i++){
-    x[i]=smpl[i];
+    if(j==0)x[i]=smpl[i];
+    if(j==1)x[i]=Rft[i];
+    if(j==2)x[i]=Ift[i];
     y[i]=i;
   }
   TGraph *g=new TGraph(smpl.size(),y,x);

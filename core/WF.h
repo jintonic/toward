@@ -41,7 +41,14 @@ class WAGE::WF : public TObject
        * 32 bits trigger count
        */
       unsigned int ctrg; // 32 bits trigger count
-
+      /**
+       * Real number part of Fourier transform
+       */
+      std::vector<double> Rft; //Real part 
+      /**
+       * Imaginary part of Fourier transform
+       */
+      std::vector<double> Ift; // Imaginary part
       /**
        * Waveform samples
        */
@@ -70,10 +77,10 @@ class WAGE::WF : public TObject
       bool IsSimilarTo(const WF& other) const;
       void MakeSimilarTo(const WF& other);
       double GetTrapozoidE(int L,int G,WF *out);
-      WF * T2F();
+      void T2F();
       void F2T(WF * wf);
       void AddNoise(int s);
-      void Draw(Option_t *chopt);
+      void Draw(Option_t *chopt,int j);
       
       int GuessL();
       int GuessG();

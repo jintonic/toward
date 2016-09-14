@@ -8,18 +8,18 @@ void test()
   wf->smpl.push_back(0);
   for(int i=0;i<50;i++)wf->smpl.push_back(i);
   for (int i=0;i<500;i++)wf->smpl.push_back(50);
- cout<<wf->GussG()<<endl;; 
   //for(int i=0;i<2000;i++)wf->smpl.push_back(cos((double)i/100));
-  wf->Draw("Al");
+  wf->Draw("Al",0);
   wf->AddNoise(1);
-  wf->Draw("samel");
+  wf->Draw("samel",0);
 
-  WF * FT=wf->T2F();
+  wf->T2F();
   TCanvas *c = new TCanvas;
-  FT->Draw("Al");
+  wf->Draw("Al",1);
+  wf->Draw("same",2);
 
   WF * tr=new WF();
   wf->GetTrapozoidE(-1,-1,tr);
   TCanvas *d = new TCanvas;
-  tr->Draw("al");
+  tr->Draw("al",0);
 }
