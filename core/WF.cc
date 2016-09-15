@@ -224,7 +224,7 @@ void WF::T2F()
     double ixk=0;
     for(int j=0;j<(int)needed.size()-1;j++)
     {
-      double po=-2*PI*i*j/needed.size();
+      double po=-2*PI*i*(j)/needed.size();
       rxk+=cos(po)*needed[j];
       ixk+=-sin(po)*needed[j];
     }
@@ -233,20 +233,20 @@ void WF::T2F()
   }
 }
 //------------------------------------------------------------------------------
-void WF::F2T(WF * wf)
+void WF::F2T()
 {
-  std::vector<double> needed=wf->smpl;
   const double PI  =3.141592653589793238463;
-  for(int i=0;i<(int)needed.size();i++)
+  for(int i=0;i<(int)Rft.size();i++)
   {
     double xk=0;
-    
-    for(int j=0;j<(int)needed.size()-1;j++)
+    double xxk=0;
+    for(int j=0;j<(int)Rft.size()-1;j++)
     {
-      double po=cos(-2*PI*i*j/needed.size());
-      xk+=po*needed[j];
+      double po=(2*PI*i*j/Rft.size());
+      xk+=cos(po)*Rft[j]*2;
+      xxk=sin(po)*Ift[j]*-2;
     }
-    smpl.push_back(xk/needed.size());
+    smpl.push_back((xk+xxk)/Rft.size()/2);
   }
 }
 //------------------------------------------------------------------------------

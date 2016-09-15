@@ -78,7 +78,7 @@ class WAGE::WF : public TObject
       void MakeSimilarTo(const WF& other);
       double GetTrapozoidE(int L,int G,WF *out);
       void T2F();
-      void F2T(WF * wf);
+      void F2T();
       void AddNoise(int s);
       void Draw(Option_t *chopt,int j);
       
