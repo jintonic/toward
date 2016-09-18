@@ -224,7 +224,7 @@ void WF::T2F()
     double ixk=0;
     for(int j=0;j<(int)needed.size()-1;j++)
     {
-      double po=-2*PI*i*(j)/needed.size();
+      double po=2*PI*i*(j)/needed.size();
       rxk+=cos(po)*needed[j];
       ixk+=-sin(po)*needed[j];
     }
@@ -236,17 +236,18 @@ void WF::T2F()
 void WF::F2T()
 {
   const double PI  =3.141592653589793238463;
-  for(int i=0;i<(int)Rft.size();i++)
+  const int N=Rft.size();
+  for(int i=0;i<N;i++)
   {
-    double xk=0;
-    double xxk=0;
-    for(int j=0;j<(int)Rft.size()-1;j++)
+    double xk=cos(0)*Rft[0]+cos(2*PI*i*N/2/N)*Rft[N/2];
+    double xxk=-sin(0)*Rft[0]*2-sin(2*PI*i/2)*Rft[N/2]*2;
+    for(int j=1;j<N/2;j++)
     {
-      double po=(2*PI*i*j/Rft.size());
+      double po=(2*PI*i*j/N);
       xk+=cos(po)*Rft[j]*2;
-      xxk=sin(po)*Ift[j]*-2;
+      xxk+=sin(po)*Ift[j]*-2;
     }
-    smpl.push_back((xk+xxk)/Rft.size()/2);
+    smpl.push_back((xk+xxk)/N);
   }
 }
 //------------------------------------------------------------------------------
