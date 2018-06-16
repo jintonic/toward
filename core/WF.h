@@ -26,6 +26,10 @@ class WAGE::WF : public TObject
       };
 
       /**
+       * Save
+       */
+      void Save();
+      /**
        * Sampling frequency
        */
       double freq; // sampling frequency

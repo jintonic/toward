@@ -2,8 +2,16 @@
 
 #include "WF.h"
 
-using namespace WAGE;
+#include<TFile.h>
 
+using namespace WAGE;
+void WF::Save()
+{
+   TFile Output("Waveform.root","recreate");
+
+   this->Write("",TObject::kOverwrite);
+   Output.Close();
+}
 bool WF::IsSimilarTo(const WF& other) const
 {
    bool similar = smpl.size()==other.smpl.size() && freq==other.freq;
