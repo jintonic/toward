@@ -1,2 +1,2 @@
-# wage
-wage - waveform analysis toolkit for germanium detectors
+# TOWARD
+toward - tools, objects for waveform analysis, reformatting & drawing
