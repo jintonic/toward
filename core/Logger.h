@@ -1,9 +1,9 @@
 #ifndef LOGGER_H
 #define LOGGER_H
 
-namespace WAGE { class Logger; }
+namespace TOWARD { class Logger; }
 
-class WAGE::Logger
+class TOWARD::Logger
 {
    public:
       static int gVerbosity; ///< global verbosity

@@ -12,7 +12,7 @@ using namespace UNIC;
 
 #include "WF.h"
 #include "WFs.h"
-using namespace WAGE;
+using namespace TOWARD;
 
 //------------------------------------------------------------------------------
 
@@ -22,13 +22,13 @@ void WFs::Initialize(const char* db)
    struct stat st;
    if (stat(db,&st)!=0) { // if not exist
       Info("Initialize", "cannot open %s", db);
-      Info("Initialize", "check $WAGESYS");
-      const char *root = gSystem->Getenv("WAGESYS");
+      Info("Initialize", "check $TOWARDSYS");
+      const char *root = gSystem->Getenv("TOWARDSYS");
       if (root==0) {
-         Warning("Initialize", "$WAGESYS is not set, return");
+         Warning("Initialize", "$TOWARDSYS is not set, return");
          return;
       }
-      Info("Initialize", "$WAGESYS=%s",root);
+      Info("Initialize", "$TOWARDSYS=%s",root);
       fDB=root;
 
       if (fDB.EndsWith("/")) fDB+="electrode/";
@@ -44,7 +44,7 @@ void WFs::Initialize(const char* db)
       return;
    }
 
-   wf.SetClass("WAGE::WF",nch);
+   wf.SetClass("TOWARD::WF",nch);
    for (Int_t i=0; i<n; i++) {
       if (ch[i]->d_name[0]=='.' || i>=nch+2) {
          free(ch[i]);

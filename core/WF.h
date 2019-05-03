@@ -7,7 +7,7 @@
 #include "Pulse.h"
 #include <TGraph.h>
 
-namespace WAGE { class WF; }
+namespace TOWARD { class WF; }
 /**
  * Waveform information.
  *
@@ -18,7 +18,7 @@ namespace WAGE { class WF; }
  * Nested TClonesArray cannot be split and loose all benifit of TClonesArray:
  * http://root.cern.ch/phpBB3/viewtopic.php?f=3&t=910
  */
-class WAGE::WF : public TObject
+class TOWARD::WF : public TObject
 {
    public:
       enum {

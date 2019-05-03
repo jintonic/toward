@@ -4,7 +4,7 @@
 
 #include<TFile.h>
 
-using namespace WAGE;
+using namespace TOWARD;
 void WF::Save()
 {
    TFile Output("Waveform.root","recreate");

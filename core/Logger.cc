@@ -1,5 +1,5 @@
 #include "Logger.h"
-using namespace WAGE;
+using namespace TOWARD;
 
 int Logger::gVerbosity = 0;
 

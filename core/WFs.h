@@ -3,7 +3,7 @@
 
 #include <TClonesArray.h>
 
-namespace WAGE {
+namespace TOWARD {
    class WF;
    class WFs;
 }
@@ -16,10 +16,10 @@ namespace WAGE {
  *
  * It loads electrode database to initialize the TClonesArray of empty
  * waveforms with electrode information. Loading database is done here instead
- * of in the WAGE::Electrode class to avoid passing run, file name and location
- * to WAGE::Electrode.
+ * of in the TOWARD::Electrode class to avoid passing run, file name and location
+ * to TOWARD::Electrode.
  */
-class WAGE::WFs : public TObject
+class TOWARD::WFs : public TObject
 {
    private:
       WF* Map(int ch); ///< map ch to WF::electrode
