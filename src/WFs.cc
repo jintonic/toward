@@ -202,3 +202,13 @@ WF* WFs::At(unsigned short i) const
 
 //------------------------------------------------------------------------------
 
+void WFs::Save()
+{
+   TTree t[n] = {0};
+   for (size_t i=0; i<n; i++) {
+      t[i] = new TTree(Form("t%d",i), Form("ch%d",I));
+      wf.At(i)->SetTree(t[i]); // create branches
+   }
+}
+//------------------------------------------------------------------------------
+
