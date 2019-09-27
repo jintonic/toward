@@ -53,10 +53,7 @@ class TOWARD::WF : public TObject
        * Imaginary part of Fourier transform
        */
       std::vector<double> Ift; // Imaginary part
-      /**
-       * Waveform samples
-       */
-      std::vector<double> smpl; // waveform samples
+      std::vector<double> s; ///< sample values
       /**
        * Number of waveform samples
        */

@@ -14,7 +14,7 @@ void WF::Save()
 }
 bool WF::IsSimilarTo(const WF& other) const
 {
-   bool similar = smpl.size()==other.smpl.size() && freq==other.freq;
+   bool similar = s.size()==other.s.size() && freq==other.freq;
 
    return similar;
 }
@@ -23,7 +23,7 @@ bool WF::IsSimilarTo(const WF& other) const
 
 void WF::MakeSimilarTo(const WF& other)
 {
-   smpl.resize(other.smpl.size());
+   s.resize(other.s.size());
    freq = other.freq;
 }
 
@@ -37,7 +37,7 @@ WF& WF::operator+=(const WF& other)
       return *this;
    }
 
-   for (size_t i=0; i<smpl.size(); i++) smpl[i] += other.smpl[i];
+   for (size_t i=0; i<s.size(); i++) s[i] += other.s[i];
 
    return *this;
 }
@@ -52,7 +52,7 @@ WF& WF::operator-=(const WF& other)
       return *this;
    }
 
-   for (size_t i=0; i<smpl.size(); i++) smpl[i] -= other.smpl[i];
+   for (size_t i=0; i<s.size(); i++) s[i] -= other.s[i];
 
    return *this;
 }
@@ -67,7 +67,7 @@ WF& WF::operator*=(const WF& other)
       return *this;
    }
 
-   for (size_t i=0; i<smpl.size(); i++) smpl[i] *= other.smpl[i];
+   for (size_t i=0; i<s.size(); i++) s[i] *= other.s[i];
 
    return *this;
 }
@@ -80,8 +80,8 @@ WF& WF::operator/=(const WF& other)
       return *this;
    }
 
-   for (size_t i=0; i<smpl.size(); i++)
-      smpl[i] /= (other.smpl[i]==0.0) ? DBL_MIN : other.smpl[i];
+   for (size_t i=0; i<s.size(); i++)
+      s[i] /= (other.s[i]==0.0) ? DBL_MIN : other.s[i];
 
    return *this;
 }
@@ -90,7 +90,7 @@ WF& WF::operator/=(const WF& other)
 
 WF& WF::operator+=(double value)
 {
-   for (size_t i=0; i<smpl.size(); i++) smpl[i] += value;
+   for (size_t i=0; i<s.size(); i++) s[i] += value;
 
    return *this;
 }
@@ -99,7 +99,7 @@ WF& WF::operator+=(double value)
 
 WF& WF::operator*=(double value)
 {
-   for (size_t i=0; i<smpl.size(); i++) smpl[i] *= value;
+   for (size_t i=0; i<s.size(); i++) s[i] *= value;
 
    return *this;
 }
@@ -122,7 +122,7 @@ void WF::Reset()
 {
    ResetBit(kCalibrated);
    freq=0; ped=0; prms=0; ctrg=0;
-   ns=0; smpl.resize(0);
+   ns=0; s.resize(0);
    np=0; pls.resize(0);
 }
 
@@ -132,9 +132,9 @@ int WF::GuessL()
 {
   double maxdelta=0;
   int maxdeltalocation=0;
-  for(int i=0;i<(int)smpl.size()-1;i++)
+  for(int i=0;i<(int)s.size()-1;i++)
   {
-    double delta=smpl[i]-smpl[i+1];
+    double delta=s[i]-s[i+1];
     if (delta<0)delta=-delta;
     if(delta>maxdelta)
     {
@@ -144,8 +144,8 @@ int WF::GuessL()
   }
   int gusstheend=maxdeltalocation;
   int gussthebegin=maxdeltalocation;
-  while(smpl[gusstheend+1]>smpl[gusstheend])gusstheend++;
-  while(smpl[gussthebegin-1]<smpl[gussthebegin])gussthebegin--;
+  while(s[gusstheend+1]>s[gusstheend])gusstheend++;
+  while(s[gussthebegin-1]<s[gussthebegin])gussthebegin--;
   return (gussthebegin-GuessG())/4;
 } 
 #include <iostream>
@@ -155,22 +155,22 @@ using namespace std;
 int WF::GuessG()
 {
   double maxslope=0;
-  int gstart=0,gend=smpl.size()-1;
-  int l=smpl.size()/10;
-  for(int i=l;i<smpl.size();i++)
+  int gstart=0,gend=s.size()-1;
+  int l=s.size()/10;
+  for(int i=l;i<s.size();i++)
   {
-    if((smpl[i]-smpl[0])/i>maxslope)
+    if((s[i]-s[0])/i>maxslope)
     {
-      maxslope=(smpl[i]-smpl[0])/i;
+      maxslope=(s[i]-s[0])/i;
       gend=i;
     }
   }
   maxslope=0;
-  for(int i=smpl.size()-l;i-->0;)
+  for(int i=s.size()-l;i-->0;)
   {
-    if((smpl[smpl.size()-1]-smpl[i])/(smpl.size()-i)>maxslope)
+    if((s[s.size()-1]-s[i])/(s.size()-i)>maxslope)
     {
-      maxslope=  (smpl[smpl.size()-1]-smpl[i])/(smpl.size()-i);
+      maxslope=  (s[s.size()-1]-s[i])/(s.size()-i);
       gstart=i;
     }
   }
@@ -184,21 +184,21 @@ double WF::GetTrapozoidE(int L=-1,int G=-1,WF * out=NULL)
   if(L==-1)L=GuessL();
   if(G==-1)G=GuessG()*2;
   cout<<G<<endl;
-  int n=smpl.size();
+  int n=s.size();
   if(2*L+G>n)
   {
     Warning("Filter","too large Length or Gap");
     return -1;
   }
   std::vector<double> mid;
-  for (int n=0;n<(int)smpl.size();n++)
+  for (int n=0;n<(int)s.size();n++)
   {
     mid.push_back(0);
     for(int i=0;i<L;i++)
     {
       int m=mid.size();
       if (m-i<=0)break;
-      mid[m-i-1]+=smpl[n];
+      mid[m-i-1]+=s[n];
     }
   }
   for(int i=0;i<L-1;i++)mid.pop_back();
@@ -207,7 +207,7 @@ double WF::GetTrapozoidE(int L=-1,int G=-1,WF * out=NULL)
   for (int i=0;i<n-2*L-G;i++)needed.push_back(mid[i+G+L]-mid[i]);
   if(out)
   {
-    out->smpl=needed;
+    out->s=needed;
   }
   double max=needed[0],min=needed[0];
   for(size_t i=0;i<needed.size();i++)
@@ -224,7 +224,7 @@ double WF::GetTrapozoidE(int L=-1,int G=-1,WF * out=NULL)
 using namespace std;
 void WF::T2F()
 {
-  std::vector<double> needed=smpl;
+  std::vector<double> needed=s;
   const double PI  =3.141592653589793238463;
   for(int i=0;i<(int)needed.size();i++)
   {
@@ -255,7 +255,7 @@ void WF::F2T()
       xk+=cos(po)*Rft[j]*2;
       xxk+=sin(po)*Ift[j]*-2;
     }
-    smpl.push_back((xk+xxk)/N);
+    s.push_back((xk+xxk)/N);
   }
 }
 //------------------------------------------------------------------------------
@@ -263,22 +263,22 @@ void WF::F2T()
 void WF::AddNoise(int s)
 {
   TRandom3 *r=new TRandom3();
-  for(int i=0;i<(int)smpl.size();i++)smpl[i]+=r->Gaus(0,s);
+  for(int i=0;i<(int)s.size();i++)s[i]+=r->Gaus(0,s);
 }
 //------------------------------------------------------------------------------
 void WF::Draw(Option_t *chopt="",int j=0)
 {
-  int n=smpl.size();
+  int n=s.size();
   double *x,*y;
   x=new double[n];
   y=new double[n];
   for(int i=0;i<n;i++){
-    if(j==0)x[i]=smpl[i];
+    if(j==0)x[i]=s[i];
     if(j==1)x[i]=Rft[i];
     if(j==2)x[i]=Ift[i];
     y[i]=i;
   }
-  TGraph *g=new TGraph(smpl.size(),y,x);
+  TGraph *g=new TGraph(s.size(),y,x);
   g->Draw(chopt);
   delete []x;
   delete []y;
