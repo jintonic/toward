@@ -5,13 +5,6 @@
 #include<TFile.h>
 
 using namespace TOWARD;
-void Waveform::Save()
-{
-   TFile Output("Waveform.root","recreate");
-
-   this->Write("",TObject::kOverwrite);
-   Output.Close();
-}
 bool Waveform::IsSimilarTo(coNsplt Waveform& other) coNsplt
 {
    bool similar = s.size()==other.s.size() && SamplingRate==other.SamplingRate;

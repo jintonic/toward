@@ -19,8 +19,10 @@ class TOWARD::Pulse
 		float Tau;   ///< pulse decay time
 		float Tau2;  ///< 2nd decay time
 		float Tau3;  ///< 3rd decay time
-		Pulse(): Integral(0), Height(0), Baseline(0), Ttrg(0), T10(0), T90(0),
-		Tbgn(0), Tend(0), Tpeak(0), Tau(0), Tau2(0), Tau3(0) {};
+		virtual void Reset() { Integral=0; Height=0; Baseline=0; Ttrg=0; T10=0;
+			T90=0; Tbgn=0; Tend=0; Tpeak=0; Tau=0; Tau2=0; Tau3=0; }
+		Pulse() { Reset(); }
+		virtual ~Pulse() {};
 };
 #include <TTree.h>
 #include <vector>
@@ -34,22 +36,23 @@ class TOWARD::Waveform : public Pulse
 		TTree Tree;
 		int Nspl; ///< number of samples
 		int Npls; ///< number of pulses
-		float ADC[50000]; ///< ADC counts
+		float Sample[50000]; ///< individual waveform samples
 		std::vector<Pulse> Pls;
 		float SamplingRate;
-		float Noise; ///< RMS of Baseline in ADC counts
-		std::vector<double> Re; ///< Real part of Fourier traNsplformation
-		std::vector<double> Im; ///< Imaginary part of Fourier traNsplformation
+		float Noise; ///< RMS of Baseline
 
-		Waveform(): Pulse(), Nspl(0), Npls(0), SamplingRate(0), Noise(0) {};
+		virtual void Reset() { Nspl=0; Npls=0; SamplingRate=0; Noise=0; }
+
+		Waveform(): Pulse() { Reset(); }
 		virtual ~Waveform() {};
 
 		bool IsSimilarTo(coNsplt Waveform& other) const;
 		void MakeSimilarTo(coNsplt Waveform& other);
+
 		double GetTrapozoidE(int L,int G,Waveform *out);
 		void T2F();
 		void F2T();
-		void AddNoise(int s);
+		void AddNoise(int sigma);
 		void Draw(Option_t *chopt,int j);
 
 		int GuessL();
@@ -65,6 +68,8 @@ class TOWARD::Waveform : public Pulse
 		Waveform& operator*=(double value); 
 		Waveform& operator/=(double value);
 
-		void Reset();
+	protected:
+		std::vector<double> Re; ///< Real part of Fourier transformation
+		std::vector<double> Im; ///< Imaginary part of Fourier transformation
 };
 #endif

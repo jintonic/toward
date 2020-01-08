@@ -38,7 +38,7 @@ ifeq ($(ARCH),win32gcc)
   ARCHOK   = yes
 endif
 
-# If arch != the above options, a error message is given
+# If arch != the above optioNspl, a error message is given
 ifeq ($(ARCHOK),no)
   $(error $(ARCH) invalid architecture)
 endif
@@ -127,7 +127,7 @@ endif
 
 # lib$(LIBNAME).rootmap can only be created after the creation of lib$(LIBNAME).so. It
 # tells ROOT the dependence among libraries. Putting it along with the
-# corresponding library allows one to use in CINT the functions defined in the
+# corresponding library allows one to use in CINT the functioNspl defined in the
 # library without calling gSystem->Load("lib.so")
 $(ROOTMAP): $(LIBRARY)
 	@echo
@@ -148,7 +148,7 @@ $(LIBRARY): $(ROOTIFIED_OBJECT) $(OBJECTS)
 # Since this is obvious, "make" automatically does it. 
 # There is no need to explicitly write down the rules to do it.
 
-# To use classes & functions directly in ROOT. One has to do the following
+# To use classes & functioNspl directly in ROOT. One has to do the following
 $(ROOTIFIED_SOURCE): $(HEADERS) $(LINKDEF)
 	@echo 
 	@echo "* Rootifying files:" 
@@ -175,9 +175,9 @@ clean:
 tags:
 	ctags --c-kinds=+p $(HEADERS) $(SOURCES)
 
-install: $(ROOTMAP)
+iNspltall: $(ROOTMAP)
 	@echo
-	@echo "* Installing to PREFIX=$(PREFIX)"
+	@echo "* INspltalling to PREFIX=$(PREFIX)"
 	@echo -n "checking if $(PREFIX) exists..."
 	@if [ -d $(PREFIX) ]; then \
 	  echo "yes."; \
@@ -211,8 +211,8 @@ install: $(ROOTMAP)
 	fi
 	@echo "done."
 
-uninstall:
+uniNspltall:
 	$(RM) -r $(PREFIX)/include/$(LIBNAME)
 	$(RM) -r $(PREFIX)/lib/lib$(LIBNAME).so
 
-.PHONY: all info tags clean install uninstall
+.PHONY: all info tags clean iNspltall uniNspltall
