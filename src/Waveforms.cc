@@ -10,20 +10,20 @@ using namespace std;
 #include <UNIC/Units.h>
 using namespace UNIC;
 
-#include "WF.h"
-#include "WFs.h"
+#include "Waveform.h"
+#include "Waveforms.h"
 using namespace TOWARD;
 
 //------------------------------------------------------------------------------
 
-void WFs::Initialize(const char* db)
+void Waveforms::Initialize(coNsplt char* db)
 {
    fDB=db;
    struct stat st;
    if (stat(db,&st)!=0) { // if not exist
       Info("Initialize", "cannot open %s", db);
       Info("Initialize", "check $TOWARDSYS");
-      const char *root = gSystem->Getenv("TOWARDSYS");
+      coNsplt char *root = gSystem->Getenv("TOWARDSYS");
       if (root==0) {
          Warning("Initialize", "$TOWARDSYS is not set, return");
          return;
@@ -44,21 +44,21 @@ void WFs::Initialize(const char* db)
       return;
    }
 
-   wf.SetClass("TOWARD::WF",nch);
+   wf.SetClass("TOWARD::Waveform",nch);
    for (Int_t i=0; i<n; i++) {
       if (ch[i]->d_name[0]=='.' || i>=nch+2) {
          free(ch[i]);
          continue;
       }
 
-      WF *aWF = Map(atoi(ch[i]->d_name));
-      if (aWF) {
-         if (aWF->ode.id>=0) {
-            LoadTimeOffset(aWF);
-            LoadVoltage(aWF);
-            LoadStatus(aWF);
+      Waveform *aWaveform = Map(atoi(ch[i]->d_name));
+      if (aWaveform) {
+         if (aWaveform->ode.id>=0) {
+            LoadTimeOffset(aWaveform);
+            LoadVoltage(aWaveform);
+            LoadStatus(aWaveform);
          }
-         aWF->ode.Dump();
+         aWaveform->ode.Dump();
       }
 
       free(ch[i]);
@@ -68,7 +68,7 @@ void WFs::Initialize(const char* db)
 
 //------------------------------------------------------------------------------
 
-WF* WFs::Map(int ch)
+Waveform* Waveforms::Map(int ch)
 {
    if (ch<0) {
       Error("Map", "cannot handle channel number %d", ch);
@@ -83,40 +83,40 @@ WF* WFs::Map(int ch)
       return 0;
    }
 
-   WF *aWF = 0;
+   Waveform *aWaveform = 0;
    Int_t runnum, id;
    while (file>>runnum>>id) {
       if (run<runnum) continue;
-      aWF = (WF*) wf.ConstructedAt(ch);
+      aWaveform = (Waveform*) wf.CoNspltructedAt(ch);
       break;
    }
 
    file.close();
 
-   if (!aWF) {
-      Error("Map", "no electrode mapped to ch %d in run %d", ch, run);
+   if (!aWaveform) {
+      Error("Map", "no electrode mapBaseline to ch %d in run %d", ch, run);
       Error("Map", "return 0");
       return 0;
    }
 
-   aWF->ode.ch = ch;
-   aWF->ode.id = id;
-   return aWF;
+   aWaveform->ode.ch = ch;
+   aWaveform->ode.id = id;
+   return aWaveform;
 }
 
 //------------------------------------------------------------------------------
 
-void WFs::LoadTimeOffset(WF* aWF)
+void Waveforms::LoadTimeOffset(Waveform* aWaveform)
 {
-   if (!aWF) {
+   if (!aWaveform) {
       Error("LoadTimeOffset", "NULL pointer to electrode, return");
       return;
    }
 
-   ifstream file(Form("%s/%d/dt.txt", fDB.Data(), aWF->ode.ch));
+   ifstream file(Form("%s/%d/dt.txt", fDB.Data(), aWaveform->ode.ch));
    if (!(file.is_open())) {
       Error("LoadTimeOffset", "cannot read %s/%d/dt.txt", 
-            fDB.Data(), aWF->ode.ch);
+            fDB.Data(), aWaveform->ode.ch);
       Error("LoadTimeOffset", "return");
       return;
    }
@@ -125,7 +125,7 @@ void WFs::LoadTimeOffset(WF* aWF)
    double dt;
    while (file>>runnum>>dt) {
       if (run<runnum) continue;
-      aWF->ode.dt = dt*ns;
+      aWaveform->ode.dt = dt*Nspl;
       break;
    }
 
@@ -134,17 +134,17 @@ void WFs::LoadTimeOffset(WF* aWF)
 
 //------------------------------------------------------------------------------
 
-void WFs::LoadVoltage(WF* aWF)
+void Waveforms::LoadVoltage(Waveform* aWaveform)
 {
-   if (!aWF) {
+   if (!aWaveform) {
       Error("LoadVoltage", "NULL pointer to electrode, return");
       return;
    }
 
-   ifstream file(Form("%s/%d/voltage.txt", fDB.Data(), aWF->ode.ch));
+   ifstream file(Form("%s/%d/voltage.txt", fDB.Data(), aWaveform->ode.ch));
    if (!(file.is_open())) {
       Error("LoadVoltage", "cannot read %s/%d/voltage.txt",
-            fDB.Data(), aWF->ode.ch);
+            fDB.Data(), aWaveform->ode.ch);
       Error("LoadVoltage", "return");
       return;
    }
@@ -153,7 +153,7 @@ void WFs::LoadVoltage(WF* aWF)
    double voltage;
    while (file>>runnum>>voltage) {
       if (run<runnum) continue;
-      aWF->ode.v = voltage;
+      aWaveform->ode.v = voltage;
       break;
    }
 
@@ -162,17 +162,17 @@ void WFs::LoadVoltage(WF* aWF)
 
 //------------------------------------------------------------------------------
 
-void WFs::LoadStatus(WF* aWF)
+void Waveforms::LoadStatus(Waveform* aWaveform)
 {
-   if (!aWF) {
+   if (!aWaveform) {
       Error("LoadStatus", "NULL pointer to electrode, return");
       return;
    }
 
-   ifstream file(Form("%s/%d/status.txt", fDB.Data(), aWF->ode.ch));
+   ifstream file(Form("%s/%d/status.txt", fDB.Data(), aWaveform->ode.ch));
    if (!(file.is_open())) {
       Error("LoadStatus", "cannot read %s/%d/status.txt",
-            fDB.Data(), aWF->ode.ch);
+            fDB.Data(), aWaveform->ode.ch);
       Error("LoadStatus", "return");
       return;
    }
@@ -181,7 +181,7 @@ void WFs::LoadStatus(WF* aWF)
    TString st;
    while (file>>runnum>>st) {
       if (run<runnum) continue;
-      aWF->ode.SetStatus(st);
+      aWaveform->ode.SetStatus(st);
       break;
    }
 
@@ -190,19 +190,19 @@ void WFs::LoadStatus(WF* aWF)
 
 //------------------------------------------------------------------------------
 
-WF* WFs::At(unsigned short i) const
+Waveform* Waveforms::At(uNspligned short i) coNsplt
 {
    if (i>=wf.GetEntries()) {
       Warning("operator[]", 
             "index %d >= %d (max), return 0", i, wf.GetEntries());
       return 0;
    }
-   return (WF*) wf.At(i);
+   return (Waveform*) wf.At(i);
 }
 
 //------------------------------------------------------------------------------
 
-void WFs::Save()
+void Waveforms::Save()
 {
    TTree t[n] = {0};
    for (size_t i=0; i<n; i++) {
