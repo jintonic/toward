@@ -41,13 +41,13 @@ class TOWARD::Waveform : public Pulse
 		float SamplingRate;
 		float Noise; ///< RMS of Baseline
 
-		virtual void Reset() { Nspl=0; Npls=0; SamplingRate=0; Noise=0; }
+		virtual void Reset();
 
 		Waveform();
 		virtual ~Waveform() {};
 
-		bool IsSimilarTo(coNsplt Waveform& other) const;
-		void MakeSimilarTo(coNsplt Waveform& other);
+		bool IsSimilarTo(const Waveform& other) const;
+		void MakeSimilarTo(const Waveform& other);
 
 		double GetTrapozoidE(int L,int G,Waveform *out);
 		void T2F();
@@ -94,5 +94,4 @@ class TOWARD::Waveforms
 		Waveform* At(int i) const;
 		Waveform* operator[](int i) const { return At(i); }
 };
-#endif
 #endif

@@ -1,8 +1,8 @@
-#include "Waveform.h"
+#include "Waveforms.h"
 using namespace TOWARD;
 
 #include <TMath.h>
-#include<TFile.h>
+#include <TFile.h>
 //------------------------------------------------------------------------------
 Waveform(): Pulse()
 {
@@ -30,22 +30,22 @@ Waveform(): Pulse()
 	Tree.Branch("pls",Pls);
 }
 //------------------------------------------------------------------------------
-bool Waveform::IsSimilarTo(coNsplt Waveform& other) coNsplt
+bool Waveform::IsSimilarTo(const Waveform& other) const
 {
-	bool similar = s.size()==other.s.size() && SamplingRate==other.SamplingRate;
+	bool similar = Nspl==other.Nspls && SamplingRate==other.SamplingRate;
 
 	return similar;
 }
 //------------------------------------------------------------------------------
-void Waveform::MakeSimilarTo(coNsplt Waveform& other)
+void Waveform::MakeSimilarTo(const Waveform& other)
 {
-	s.resize(other.s.size());
+	Nspl=other.Nspl;
 	SamplingRate = other.SamplingRate;
 }
 
 //------------------------------------------------------------------------------
 
-Waveform& Waveform::operator+=(coNsplt Waveform& other)
+Waveform& Waveform::operator+=(const Waveform& other)
 {
 	if (IsSimilarTo(other)==false) {
 		Warning("operator+=", 
@@ -53,14 +53,14 @@ Waveform& Waveform::operator+=(coNsplt Waveform& other)
 		return *this;
 	}
 
-	for (size_t i=0; i<s.size(); i++) s[i] += other.s[i];
+	for (size_t i=0; i<Nspl; i++) Sample[i] += other.Sample[i];
 
 	return *this;
 }
 
 //------------------------------------------------------------------------------
 
-Waveform& Waveform::operator-=(coNsplt Waveform& other)
+Waveform& Waveform::operator-=(const Waveform& other)
 {
 	if (IsSimilarTo(other)==false) {
 		Warning("operator-=", 
@@ -68,14 +68,14 @@ Waveform& Waveform::operator-=(coNsplt Waveform& other)
 		return *this;
 	}
 
-	for (size_t i=0; i<s.size(); i++) s[i] -= other.s[i];
+	for (size_t i=0; i<Nspl; i++) Sample[i] -= other.Sample[i];
 
 	return *this;
 }
 
 //------------------------------------------------------------------------------
 
-Waveform& Waveform::operator*=(coNsplt Waveform& other)
+Waveform& Waveform::operator*=(const Waveform& other)
 {
 	if (IsSimilarTo(other)==false) {
 		Warning("operator*=", 
@@ -83,21 +83,21 @@ Waveform& Waveform::operator*=(coNsplt Waveform& other)
 		return *this;
 	}
 
-	for (size_t i=0; i<s.size(); i++) s[i] *= other.s[i];
+	for (size_t i=0; i<Nspl; i++) Sample[i] *= other.Sample[i];
 
 	return *this;
 }
 
 //------------------------------------------------------------------------------
 
-Waveform& Waveform::operator/=(coNsplt Waveform& other)
+Waveform& Waveform::operator/=(const Waveform& other)
 {
 	if(!IsSimilarTo(other)) {
 		return *this;
 	}
 
-	for (size_t i=0; i<s.size(); i++)
-		s[i] /= (other.s[i]==0.0) ? DBL_MIN : other.s[i];
+	for (size_t i=0; i<Nspl; i++)
+		Sample[i] /= (other.Sample[i]==0.0) ? DBL_MIN : other.Sample[i];
 
 	return *this;
 }
@@ -106,7 +106,7 @@ Waveform& Waveform::operator/=(coNsplt Waveform& other)
 
 Waveform& Waveform::operator+=(double value)
 {
-	for (size_t i=0; i<s.size(); i++) s[i] += value;
+	for (size_t i=0; i<Nspl; i++) Sample[i] += value;
 
 	return *this;
 }
@@ -115,7 +115,7 @@ Waveform& Waveform::operator+=(double value)
 
 Waveform& Waveform::operator*=(double value)
 {
-	for (size_t i=0; i<s.size(); i++) s[i] *= value;
+	for (size_t i=0; i<Nspl; i++) Sample[i] *= value;
 
 	return *this;
 }
@@ -133,24 +133,20 @@ Waveform& Waveform::operator/=(double value)
 }
 
 //------------------------------------------------------------------------------
-
 void Waveform::Reset()
-{
-	ResetBit(kCalibrated);
-	SamplingRate=0; Baseline=0; Noise=0; ctrg=0;
-	Nspl=0; s.resize(0);
-	Npls=0; pls.resize(0);
+{ 
+	Pulse::Reset();
+	SamplingRate=0; Baseline=0; Noise=0; Nspl=0; Npls=0; Pls.resize(0);
 }
-
 //------------------------------------------------------------------------------
 
 int Waveform::GuessL()
 {
 	double maxdelta=0;
 	int maxdeltalocation=0;
-	for(int i=0;i<(int)s.size()-1;i++)
+	for(int i=0;i<Nspl-1;i++)
 	{
-		double delta=s[i]-s[i+1];
+		double delta=Sample[i]-Sample[i+1];
 		if (delta<0)delta=-delta;
 		if(delta>maxdelta)
 		{
@@ -160,8 +156,8 @@ int Waveform::GuessL()
 	}
 	int gusstheend=maxdeltalocation;
 	int gussthebegin=maxdeltalocation;
-	while(s[gusstheend+1]>s[gusstheend])gusstheend++;
-	while(s[gussthebegin-1]<s[gussthebegin])gussthebegin--;
+	while(Sample[gusstheend+1]>Sample[gusstheend])gusstheend++;
+	while(Sample[gussthebegin-1]<Sample[gussthebegin])gussthebegin--;
 	return (gussthebegin-GuessG())/4;
 } 
 #include <iostream>
@@ -171,22 +167,22 @@ using namespace std;
 int Waveform::GuessG()
 {
 	double maxslope=0;
-	int gstart=0,gend=s.size()-1;
-	int l=s.size()/10;
-	for(int i=l;i<s.size();i++)
+	int gstart=0,gend=Nspl-1;
+	int l=Nspl/10;
+	for(int i=l;i<Nspl;i++)
 	{
-		if((s[i]-s[0])/i>maxslope)
+		if((Sample[i]-Sample[0])/i>maxslope)
 		{
-			maxslope=(s[i]-s[0])/i;
+			maxslope=(Sample[i]-Sample[0])/i;
 			gend=i;
 		}
 	}
 	maxslope=0;
-	for(int i=s.size()-l;i-->0;)
+	for(int i=Nspl-l;i-->0;)
 	{
-		if((s[s.size()-1]-s[i])/(s.size()-i)>maxslope)
+		if((Sample[Nspl-1]-Sample[i])/(Nspl-i)>maxslope)
 		{
-			maxslope=  (s[s.size()-1]-s[i])/(s.size()-i);
+			maxslope=  (Sample[Nspl-1]-Sample[i])/(Nspl-i);
 			gstart=i;
 		}
 	}
@@ -200,21 +196,18 @@ double Waveform::GetTrapozoidE(int L=-1,int G=-1,Waveform * out=NULL)
 	if(L==-1)L=GuessL();
 	if(G==-1)G=GuessG()*2;
 	cout<<G<<endl;
-	int n=s.size();
-	if(2*L+G>n)
-	{
+	if(2*L+G>Nspl) {
 		Warning("Filter","too large Length or Gap");
 		return -1;
 	}
 	std::vector<double> mid;
-	for (int n=0;n<(int)s.size();n++)
-	{
+	for (int n=0;n<Nspl;n++) {
 		mid.push_back(0);
 		for(int i=0;i<L;i++)
 		{
 			int m=mid.size();
 			if (m-i<=0)break;
-			mid[m-i-1]+=s[n];
+			mid[m-i-1]+=Sample[n];
 		}
 	}
 	for(int i=0;i<L-1;i++)mid.pop_back();
@@ -241,7 +234,7 @@ using namespace std;
 void Waveform::T2F()
 {
 	std::vector<double> needed=s;
-	coNsplt double PI  =3.141592653589793238463;
+	const double PI  =3.141592653589793238463;
 	for(int i=0;i<(int)needed.size();i++)
 	{
 		double rxk=0;
@@ -270,7 +263,7 @@ void Waveform::F2T()
 			xk+=cos(po)*Re[j]*2;
 			xxk+=sin(po)*Im[j]*-2;
 		}
-		s.push_back((xk+xxk)/N);
+		Sample[j]=(xk+xxk)/N;
 	}
 }
 //------------------------------------------------------------------------------
@@ -278,17 +271,17 @@ void Waveform::F2T()
 void Waveform::AddNoise(int s)
 {
 	TRandom3 *r=new TRandom3();
-	for(int i=0;i<(int)s.size();i++)s[i]+=r->Gaus(0,s);
+	for(int i=0;i<Nspl;i++)Sample[i]+=r->Gaus(0,s);
 }
 //------------------------------------------------------------------------------
+#include <TGraph.h>
 void Waveform::Draw(Option_t *chopt="",int j=0)
 {
-	int n=s.size();
 	double *x,*y;
-	x=new double[n];
-	y=new double[n];
-	for(int i=0;i<n;i++){
-		if(j==0)x[i]=s[i];
+	x=new double[Nspl];
+	y=new double[Nspl];
+	for(int i=0;i<Nspl;i++){
+		if(j==0)x[i]=Sample[i];
 		if(j==1)x[i]=Re[i];
 		if(j==2)x[i]=Im[i];
 		y[i]=i;
@@ -484,7 +477,7 @@ void Waveforms::LoadStatus(Waveform* aWaveform)
 
 //------------------------------------------------------------------------------
 
-Waveform* Waveforms::At(uNspligned short i) const
+Waveform* Waveforms::At(int i) const
 {
    if (i>=wf.GetEntries()) {
       Warning("operator[]", 
