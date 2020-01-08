@@ -1,35 +1,35 @@
 #include <float.h>
 
-#include "WF.h"
+#include "Waveform.h"
 
 #include<TFile.h>
 
 using namespace TOWARD;
-void WF::Save()
+void Waveform::Save()
 {
    TFile Output("Waveform.root","recreate");
 
    this->Write("",TObject::kOverwrite);
    Output.Close();
 }
-bool WF::IsSimilarTo(const WF& other) const
+bool Waveform::IsSimilarTo(coNsplt Waveform& other) coNsplt
 {
-   bool similar = s.size()==other.s.size() && freq==other.freq;
+   bool similar = s.size()==other.s.size() && SamplingRate==other.SamplingRate;
 
    return similar;
 }
 
 //------------------------------------------------------------------------------
 
-void WF::MakeSimilarTo(const WF& other)
+void Waveform::MakeSimilarTo(coNsplt Waveform& other)
 {
    s.resize(other.s.size());
-   freq = other.freq;
+   SamplingRate = other.SamplingRate;
 }
 
 //------------------------------------------------------------------------------
 
-WF& WF::operator+=(const WF& other)
+Waveform& Waveform::operator+=(coNsplt Waveform& other)
 {
    if (IsSimilarTo(other)==false) {
       Warning("operator+=", 
@@ -44,7 +44,7 @@ WF& WF::operator+=(const WF& other)
 
 //------------------------------------------------------------------------------
 
-WF& WF::operator-=(const WF& other)
+Waveform& Waveform::operator-=(coNsplt Waveform& other)
 {
    if (IsSimilarTo(other)==false) {
       Warning("operator-=", 
@@ -59,7 +59,7 @@ WF& WF::operator-=(const WF& other)
 
 //------------------------------------------------------------------------------
 
-WF& WF::operator*=(const WF& other)
+Waveform& Waveform::operator*=(coNsplt Waveform& other)
 {
    if (IsSimilarTo(other)==false) {
       Warning("operator*=", 
@@ -74,7 +74,7 @@ WF& WF::operator*=(const WF& other)
 
 //------------------------------------------------------------------------------
 
-WF& WF::operator/=(const WF& other)
+Waveform& Waveform::operator/=(coNsplt Waveform& other)
 {
    if(!IsSimilarTo(other)) {
       return *this;
@@ -88,7 +88,7 @@ WF& WF::operator/=(const WF& other)
 
 //------------------------------------------------------------------------------
 
-WF& WF::operator+=(double value)
+Waveform& Waveform::operator+=(double value)
 {
    for (size_t i=0; i<s.size(); i++) s[i] += value;
 
@@ -97,7 +97,7 @@ WF& WF::operator+=(double value)
 
 //------------------------------------------------------------------------------
 
-WF& WF::operator*=(double value)
+Waveform& Waveform::operator*=(double value)
 {
    for (size_t i=0; i<s.size(); i++) s[i] *= value;
 
@@ -106,7 +106,7 @@ WF& WF::operator*=(double value)
 
 //------------------------------------------------------------------------------
 
-WF& WF::operator/=(double value) 
+Waveform& Waveform::operator/=(double value) 
 { 
    if (value==0.0) {
       Warning("operator/", "Cannot be divided by zero! Do nothing.");
@@ -118,17 +118,17 @@ WF& WF::operator/=(double value)
 
 //------------------------------------------------------------------------------
 
-void WF::Reset()
+void Waveform::Reset()
 {
    ResetBit(kCalibrated);
-   freq=0; ped=0; prms=0; ctrg=0;
-   ns=0; s.resize(0);
-   np=0; pls.resize(0);
+   SamplingRate=0; Baseline=0; Noise=0; ctrg=0;
+   Nspl=0; s.resize(0);
+   Npls=0; pls.resize(0);
 }
 
 //------------------------------------------------------------------------------
 
-int WF::GuessL()
+int Waveform::GuessL()
 {
   double maxdelta=0;
   int maxdeltalocation=0;
@@ -152,7 +152,7 @@ int WF::GuessL()
 using namespace std;
 //------------------------------------------------------------------------------
 #include <stdlib.h> 
-int WF::GuessG()
+int Waveform::GuessG()
 {
   double maxslope=0;
   int gstart=0,gend=s.size()-1;
@@ -179,7 +179,7 @@ int WF::GuessG()
 
 //------------------------------------------------------------------------------
 
-double WF::GetTrapozoidE(int L=-1,int G=-1,WF * out=NULL)
+double Waveform::GetTrapozoidE(int L=-1,int G=-1,Waveform * out=NULL)
 {
   if(L==-1)L=GuessL();
   if(G==-1)G=GuessG()*2;
@@ -222,10 +222,10 @@ double WF::GetTrapozoidE(int L=-1,int G=-1,WF * out=NULL)
 #include <cmath>
 #include <iostream>
 using namespace std;
-void WF::T2F()
+void Waveform::T2F()
 {
   std::vector<double> needed=s;
-  const double PI  =3.141592653589793238463;
+  coNsplt double PI  =3.141592653589793238463;
   for(int i=0;i<(int)needed.size();i++)
   {
     double rxk=0;
@@ -236,37 +236,37 @@ void WF::T2F()
       rxk+=cos(po)*needed[j];
       ixk+=-sin(po)*needed[j];
     }
-    Rft.push_back(rxk);
-    Ift.push_back(ixk);
+    Re.push_back(rxk);
+    Im.push_back(ixk);
   }
 }
 //------------------------------------------------------------------------------
-void WF::F2T()
+void Waveform::F2T()
 {
-  const double PI  =3.141592653589793238463;
-  const int N=Rft.size();
+  coNsplt double PI  =3.141592653589793238463;
+  coNsplt int N=Re.size();
   for(int i=0;i<N;i++)
   {
-    double xk=cos(0)*Rft[0]+cos(2*PI*i*N/2/N)*Rft[N/2];
-    double xxk=-sin(0)*Rft[0]*2-sin(2*PI*i/2)*Rft[N/2]*2;
+    double xk=cos(0)*Re[0]+cos(2*PI*i*N/2/N)*Re[N/2];
+    double xxk=-sin(0)*Re[0]*2-sin(2*PI*i/2)*Re[N/2]*2;
     for(int j=1;j<N/2;j++)
     {
       double po=(2*PI*i*j/N);
-      xk+=cos(po)*Rft[j]*2;
-      xxk+=sin(po)*Ift[j]*-2;
+      xk+=cos(po)*Re[j]*2;
+      xxk+=sin(po)*Im[j]*-2;
     }
     s.push_back((xk+xxk)/N);
   }
 }
 //------------------------------------------------------------------------------
 #include <TRandom3.h>
-void WF::AddNoise(int s)
+void Waveform::AddNoise(int s)
 {
   TRandom3 *r=new TRandom3();
   for(int i=0;i<(int)s.size();i++)s[i]+=r->Gaus(0,s);
 }
 //------------------------------------------------------------------------------
-void WF::Draw(Option_t *chopt="",int j=0)
+void Waveform::Draw(Option_t *chopt="",int j=0)
 {
   int n=s.size();
   double *x,*y;
@@ -274,8 +274,8 @@ void WF::Draw(Option_t *chopt="",int j=0)
   y=new double[n];
   for(int i=0;i<n;i++){
     if(j==0)x[i]=s[i];
-    if(j==1)x[i]=Rft[i];
-    if(j==2)x[i]=Ift[i];
+    if(j==1)x[i]=Re[i];
+    if(j==2)x[i]=Im[i];
     y[i]=i;
   }
   TGraph *g=new TGraph(s.size(),y,x);
