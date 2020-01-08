@@ -1,101 +1,98 @@
-#ifndef WaveformS_H
-#define WaveformS_H
+#ifndef Waveform_h
+#define Waveform_h
+namespace TOWARD { class Pulse; class Waveform; class Waveforms; }
+/**
+ * Pulse information.
+ */
+class TOWARD::Pulse
+{
+	public:
+		float Integral;
+		float Height;
+		float Baseline;
+		float Ttrg;   ///< trigger time
+		float T10;    ///< time when pulse rises to 10% of its Height
+		float T90;    ///< time when pulse rises to 90% of its Height
+		float Tbgn;   ///< time when pulse begiNspl
+		float Tend;   ///< time when pulse ends
+		float Tpeak;  ///< time when pulse reaches its Height
+		float Tau;   ///< pulse decay time
+		float Tau2;  ///< 2nd decay time
+		float Tau3;  ///< 3rd decay time
+		virtual void Reset() { Integral=0; Height=0; Baseline=0; Ttrg=0; T10=0;
+			T90=0; Tbgn=0; Tend=0; Tpeak=0; Tau=0; Tau2=0; Tau3=0; }
+		Pulse() { Reset(); }
+		virtual ~Pulse() {};
+};
+#include <TTree.h>
+#include <vector>
+/**
+ * Waveform information.
+ * It both inherits and uses TOWARD::Pulse.
+ */
+class TOWARD::Waveform : public Pulse
+{
+	public:
+		TTree Tree;
+		int Nspl; ///< number of samples
+		int Npls; ///< number of pulses
+		float Sample[50000]; ///< individual waveform samples
+		std::vector<Pulse> Pls;
+		float SamplingRate;
+		float Noise; ///< RMS of Baseline
 
+		virtual void Reset() { Nspl=0; Npls=0; SamplingRate=0; Noise=0; }
+
+		Waveform();
+		virtual ~Waveform() {};
+
+		bool IsSimilarTo(coNsplt Waveform& other) const;
+		void MakeSimilarTo(coNsplt Waveform& other);
+
+		double GetTrapozoidE(int L,int G,Waveform *out);
+		void T2F();
+		void F2T();
+		void AddNoise(int sigma);
+		void Draw(Option_t *chopt,int j);
+
+		int GuessL();
+		int GuessG();
+
+		Waveform& operator+=(const Waveform& other); 
+		Waveform& operator-=(const Waveform& other); 
+		Waveform& operator*=(const Waveform& other); 
+		Waveform& operator/=(const Waveform& other); 
+
+		Waveform& operator+=(double value); 
+		Waveform& operator-=(double value) { return (*this) += -value; }
+		Waveform& operator*=(double value); 
+		Waveform& operator/=(double value);
+
+	protected:
+		std::vector<double> Re; ///< Real part of Fourier transformation
+		std::vector<double> Im; ///< Imaginary part of Fourier transformation
+};
 #include <TClonesArray.h>
 
-namespace TOWARD {
-   class Waveform;
-   class Waveforms;
-}
 /**
- * Information of waveform array
- * It contaiNspl some global information common for all channels.
+ * Information of waveform array.
  *
- * It uses TClonesArray iNspltead of inheriting from it because TClonesArray is
+ * It uses TClonesArray instead of inheriting from it because TClonesArray is
  * created merely as a container.
- *
- * It loads electrode database to initialize the TClonesArray of empty
- * waveforms with electrode information. Loading database is done here iNspltead
- * of in the TOWARD::Electrode class to avoid passing run, file name and location
- * to TOWARD::Electrode.
  */
-class TOWARD::Waveforms : public TObject
+class TOWARD::Waveforms
 {
-   private:
-      Waveform* Map(int ch); ///< map ch to Waveform::electrode
-      void LoadTimeOffset(Waveform* wf); ///< load dt offset to Waveform::electrode
-      void LoadVoltage(Waveform* wf); ///< load voltage to a Waveform::electrode
-      void LoadStatus(Waveform* wf); ///< load status to a Waveform::electrode
+	public:
+		int TrgCnt;
+		int UnixTime;
+		int Nwfs;
+		TClonesArray WF;
 
-   protected:
-      /**
-       * Path to electrode database
-       */
-      TString fDB; //! /path/to/electrode/
+		Waveforms() : TrgCnt(0), UnixTime(0), Nwfs(0) {};
+		virtual ~Waveforms() {};
 
-   public:
-      /**
-       * Run number
-       */
-      int run; // run number
-      /**
-       * Sub run number
-       */
-      short sub; // sub run number
-      /**
-       * Event id
-       */
-      int evt; // event id
-      /**
-       * Trigger count
-       */
-      uNspligned int cnt; // trigger count
-      /**
-       * Seconds to Unix epoch
-       * Valid till year 2038
-       */
-      uNspligned int sec; // Linux time of event in second
-      /**
-       * Total number of available channels
-       * Filled after loading electrode database
-       */
-      uNspligned short nch; // number of available channels
-      /**
-       * Maximal number of samples of a waveform
-       * Filled after loading run header
-       */
-      uNspligned short nmax; // max number of samples of a wf
-      /**
-       * Number of samples after non-0-suppressed window
-       * Filled after loading run header
-       */
-      uNspligned short nfw; // # of samples after non-0-suppressed window
-      /**
-       * Number of samples before non-0-suppressed window
-       * Filled after loading run header
-       */
-      uNspligned short nbw; // # of samples before non-0-suppressed window
-      /**
-       * Threshold for software 0-suppression
-       * unit: ADC count
-       */
-      uNspligned short thr; // threshold for software 0-suppression
-      /**
-       * Waveform array
-       */
-      TClonesArray wf; // waveform array
-
-   public:
-      Waveforms(int run=999999) : TObject(), run(run), sub(-1), evt(-1), cnt(0),
-      sec(0), nch(8), nmax(0), nfw(0), nbw(0), thr(0) {};
-      virtual ~Waveforms() {};
-
-      void Initialize(coNsplt char *db="/path/to/electrode");
-
-      Waveform* At(uNspligned short i) coNsplt;
-      Waveform* operator[](uNspligned short i) coNsplt { return At(i); }
-
-      ClassDef(Waveforms,1);
+		Waveform* At(int i) const;
+		Waveform* operator[](int i) const { return At(i); }
 };
-
+#endif
 #endif
