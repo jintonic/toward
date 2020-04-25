@@ -18,7 +18,7 @@ class SiPM1PE
 		float SigmaT;
 		float SigmaH;
 
-		SiPM1PE(float h=5, int t=20) : Nsmpl(1000), H(h), Tbgn(t), TauFast(1*ns), TauSlow(300*ns),
+		SiPM1PE(float h=2, int t=20) : Nsmpl(1000), H(h), Tbgn(t), TauFast(10*ns), TauSlow(300*ns),
 		SigmaT(5*ns), SigmaH(1) {
 			Sample.clear();
 			for (int i=0; i<Tbgn; i++) {
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 	TFile *output = new TFile("output.root","recreate");
 	TTree* ch[maxNch] = {0}; ///< data from electronic channels
 	for (int i=0; i<Nch; i++) {
-		ch[i] = new TTree(Form("c%zu",i),Form("waveform in channel %zu",i));
+		ch[i] = new TTree(Form("c%d",i),Form("waveform in channel %d",i));
 		ch[i]->Branch("np",&Npls, "np/i");
 		ch[i]->Branch("ns",&Nsmpl,"ns/i");
 		ch[i]->Branch("a",Area,  "a[np]/F");
@@ -80,7 +80,14 @@ int main(int argc, char** argv)
 	for (int n=0; n<10; n++) {
 		for (int i=0; i<Nch; i++) {
 			SiPM1PE wf(gRandom->Uniform(500),gRandom->Integer(800));
-			for (int j=0; j<Nsmpl; j++) Sample[j]=wf.Sample.at(j);
+			float threshold = 5, smax=-999; Npls=0;
+			for (int j=0; j<Nsmpl; j++) {
+				Sample[j]=wf.Sample.at(j);
+				if (Sample[j]>threshold) {
+					Ttrg[Npls]=j;
+					if (Sample[j]>smax) Tpeak[Npls]=j;
+				}
+			}
 			ch[i]->Fill();
 		}
 	}
