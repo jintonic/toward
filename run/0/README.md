@@ -1,6 +1,6 @@
 Run 0 was taken using [CAEN][] [WaveDump][] with a [DT5720][] digitizer. It serves as example input data for the testing of processing scripts in [TOWARD][]. [WaveDump][] saves waveforms from each channel separately, for example, `wave0.dat` is from channel 0.
 
-According to the [WaveDump manual][https://usermanual.wiki/Document/UM2091WaveDumpUserManualrev13.87092449/view], each event starts with six 32-bit integers (HEADER):
+According to the [WaveDump manual](https://usermanual.wiki/Document/UM2091WaveDumpUserManualrev13.87092449/view), each event starts with six 32-bit integers (HEADER):
 
 1. event size in byte (HEADER size + sample size)
 2. board Id
