@@ -5,7 +5,7 @@ run=0
 cha=0
 if [ "$#" -lt 1 ]; then
   echo "Usage:"
-  echo "./b2r.sh <run number> <channel number>"
+  echo "./w2r.sh <run number> <channel number>"
   exit
 else
   if [[ "$1" =~ ^[0-9]+$ ]]; then # positive integer
@@ -30,5 +30,5 @@ if [ ! -f "run/$run/wave$cha.dat" ]; then
   exit
 fi
 
-# run script b2r.C with two arguments $run and $cha
-root -b -q -l b2r.C"($run,$cha)"
+# run script w2r.C with two arguments $run and $cha
+root -b -q -l w2r.C"($run,$cha)"
