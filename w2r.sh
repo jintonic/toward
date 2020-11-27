@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # get run and channel number
 run=0
