@@ -1,60 +1,61 @@
 #!/bin/bash
-# Positive integer check does not work for sh in Ubuntu, but bash works
+# positive integer check does not work for #!/bin/sh in Ubuntu,
+# but #!/bin/bash works
 
 # get run and channel number
-run=0; ch=0
-if [ "$#" -lt 1 ]; then
-  echo "Usage:"
-  echo "./w2r.sh <run number> <channel number>"
-  exit
-else
-  if [[ "$1" =~ ^[0-9]+$ ]]; then # positive integer
+run=0; ch=0 # default value
+if [ "$#" -lt 1 ]; then # zero argument
+  echo -e "Usage:\n./w2r.sh <run number> <channel number>"; exit
+else # >= 1 arguments
+  if [[ "$1" =~ ^[0-9]+$ ]]; then # positive integer check
     run=$1
   else
     echo "run number \"$1\" is not a positive integer"; exit
   fi
-  if [ "$#" -gt 1 ]; then
-    if [[ "$2" =~ ^[0-9]+$ ]]; then # positive integer
+  if [ "$#" -gt 1 ]; then # > 1 arguments
+    if [[ "$2" =~ ^[0-9]+$ ]]; then # positive integer check
       ch=$2
     else
       echo "channel number \"$2\" is not a positive integer"; exit
     fi
   fi
 fi
+echo -e "run: $run \nchannel: $ch"
 
-# check if WaveDump configuration file exists
-cfg="run/$run/ch$ch.cfg"
+# check if WaveDump output binary file "wave?.dat" exists
+input="run/$run/wave$ch.dat"
+if [ ! -f "$input" ]; then echo "$input does not exist!"; exit; fi
+
+# check if WaveDump configuration file "daq.cfg" exists
+cfg="run/$run/daq.cfg"
+if [[ $run -eq 0 ]]; then cfg="run/$run/ch$ch.cfg"; fi
 if [ ! -f "$cfg" ]; then echo "$cfg does not exist!"; exit; fi
 
-# check model of digitizer
+# fetch model number of digitizer from the configuration file
 model=`awk '/^#[ ]+Digitizer:[ \t]/{print tolower($NF)}' $cfg`
-byte=2 # length of the sample value
+byte=2 # length of a sample value
 if [[ "$model" == 721 ]] || [[ "$model" == 731 ]]; then byte=1; fi
 echo digitizer: $model
 
-# check polarity setup in the configuration file
-polarity=1
+# fetch polarity setup from the configuration file
+polarity=1 # default value
 v=`awk '/^PULSE_POLARITY[ \t]/{print tolower($2)}' $cfg`
 if [[ "$v" == negative ]]; then polarity=-1; fi
 echo polarity: $v
 
-# check record length
-length=`awk '/^RECORD_LENGTH[ \t]/{print tolower($2)}' $cfg`
-echo record length: $length samples
-
-awk '/^POST_TRIGGER[ \t]/{print $2}' run/$run/ch$ch.cfg
-
-# check trigger threshold
+# fetch trigger threshold
 threshold=`awk '/^TRIGGER_THRESHOLD[ \t]/{print tolower($2)}' $cfg`
-echo trigger threshold: $threshold ADC units
+echo trigger threshold: $threshold ADC
 
-# check if run/$run/wave$ch.dat exists
-if [ ! -f "run/$run/wave$ch.dat" ]; then
-  echo "run/$run/wave$ch.dat does not exist!"
-  exit
-fi
+# fetch record length and post trigger percentage
+len=`awk '/^RECORD_LENGTH[ \t]/{print tolower($2)}' $cfg`
+echo record length: $len samples
+post_trg=`awk '/^POST_TRIGGER[ \t]/{print tolower($2)}' $cfg`
 
-# run script w2r.C with two arguments $run and $ch
-echo run: $run
-echo channel: $ch
-echo root -b -q -l w2r.C"($run,$ch)"
+pct=10 # percent of record length for baseline calculation
+if [[ $post_trg -lt $pct ]]; then pct=$post_trg; fi
+nbase=`echo - | awk -v l="$len" -v p="$pct" '{printf "%.0f", l*p/100}'`
+echo number of samples to calculate baseline: $nbase
+
+# pass arguments to w2r.C
+root -b -q -l w2r.C"($run,$ch,$threshold,$polarity,$nbase,$byte)"
