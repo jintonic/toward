@@ -10,7 +10,7 @@
 // - gets the charge pulse height using a trapezoidal filter with
 //   l: rise time of the filter, m: flat top of the filter, and
 //   M: decay time of the input pulse
-//	 https://nukephysik101.wordpress.com/2020/03/20/trapezoid-filter/
+//   https://nukephysik101.wordpress.com/2020/03/20/trapezoid-filter/
 
 void q2i(int run=0, int cha=0,
 		int l=1000, int m=500, float M=11480)
@@ -43,16 +43,17 @@ void q2i(int run=0, int cha=0,
 	cout<<nevt<<" events from channel "<<cha<<" in run "<<run<<endl;
 	for (int ievt=0; ievt<nevt; ievt++) {
 		tadc->GetEntry(ievt);
-		if (ievt%100==0) cout<<ievt<<" events processed"<<endl;
+		if (ievt%100==0) cout<<"Processing event "<<ievt<<endl;
 		
 		b=db=h=imax=0; // reset parameters
 	 	for (int n=0; n<100; n++) { b+=a[n]; } b/=100; // get baseline
 		for (int n=0; n<100; n++) db+=(a[n]-b)*(a[n]-b); db=sqrt(db/100);
 
 		// 5-point smoothing
-		q[0]=a[0]-b; q[1]=a[1]-b; q[ns-2]=a[ns-2]-b; q[ns-1]=a[ns-1]-b;
-		for (int n=2; n<ns-2; n++) {
-		 	q[n]=(a[n+2]+2*a[n+1]+3*a[n]+2*a[n-1]+a[n-2])/9-b;
+		q[0]=a[0]-b; q[1]=a[1]-b; q[2]=a[2]-b;
+		q[ns-3]=a[ns-3]-b; q[ns-2]=a[ns-2]-b; q[ns-1]=a[ns-1]-b;
+		for (int n=3; n<ns-3; n++) {
+		 	q[n]=(a[n+3]+3.*a[n+2]+6.*a[n+1]+7.*a[n]+6.*a[n-1]+3.*a[n-2]+a[n-3])/27-b;
 			if (h<q[n]) { h=q[n]; tp=n; } // search for T_peak after smoothing
 		}
 		
