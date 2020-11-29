@@ -1,5 +1,12 @@
-// convert binary data from CAEN WaveDump to ROOT format
-void w2r(int run=0, int ch=0)
+// Convert binary data from CAEN WaveDump to ROOT format. Arguments:
+// - run: run number
+// - ch: channel number
+// - thr: threshold in ADC unit
+// - polarity: polarity of triggered pulse (1: posivity, -1: negative)
+// - nbase: number of samples for baseline calculation
+// - ssize: size of a sample value in byte
+void w2r(int run=0, int ch=0, int thr=10,
+	 	int polarity=1, int nbase=100, int ssize=2)
 {
 	ifstream *input = new ifstream(Form("run/%d/wave%d.dat",run,ch), ios::binary);
 	input->seekg(0, ios::end); // move getter to the end of file
@@ -13,6 +20,7 @@ void w2r(int run=0, int ch=0)
 	tree->Branch("n", &n, "n/I");  // number of samples
 	tree->Branch("s", s, "s[n]/S");// waveform samples
 	tree->Branch("t", &t, "t/I");  // trigger time tag
+	tree->Branch("thr", &thr, "thr/I");  // trigger threshold in ADC unit
 
 	cout<<"Processing channel "<<ch<<endl;
 	while (input->good() && input->tellg()<fsize) {
@@ -24,8 +32,11 @@ void w2r(int run=0, int ch=0)
 		input->read(reinterpret_cast<char*>(&t), 4);
 
 		if (evt%1000==0) cout<<"Processing event "<<evt<<endl;
-		n = (len-24)/2; // number of 16-bit long waveform samples
-		for (int j=0; j<n; j++) input->read(reinterpret_cast<char*>(&s[j]),2);
+		n = (len-24)/ssize; // number of waveform samples
+		for (int j=0; j<n; j++) {
+			input->read(reinterpret_cast<char*>(&s[j]),2);
+			if (polarity==-1) s[j]*=polarity;
+		}
 
 		tree->Fill();
 	}
