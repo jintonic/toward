@@ -32,10 +32,14 @@ if [[ $run -eq 0 ]]; then cfg="run/$run/ch$ch.cfg"; fi
 if [ ! -f "$cfg" ]; then echo "$cfg does not exist!"; exit; fi
 
 # fetch model number of digitizer from the configuration file
-model=`awk '/^#[ ]+Digitizer:[ \t]/{print tolower($NF)}' $cfg`
+model=`awk '/^#[ ]+Digitizer:[ \t]/{print $NF}' $cfg`
 byte=2 # length of a sample value
-if [[ "$model" == 721 ]] || [[ "$model" == 731 ]]; then byte=1; fi
-echo digitizer: $model
+if [[ "$model" =~ ^7[2-6][0-5]$ ]]; then 
+  if [[ $model == 721 ]] || [[ $model == 731 ]]; then byte=1; fi
+  echo digitizer: $model
+else
+  echo digitizer: $model not recogized
+fi
 
 # fetch polarity setup from the configuration file
 polarity=1 # default value
@@ -44,13 +48,14 @@ if [[ "$v" == negative ]]; then polarity=-1; fi
 echo polarity: $v
 
 # fetch trigger threshold
-threshold=`awk '/^TRIGGER_THRESHOLD[ \t]/{print tolower($2)}' $cfg`
-echo trigger threshold: $threshold ADC
+threshold=`awk '/^TRIGGER_THRESHOLD[ \t]/{print $2}' $cfg`
+threshold=`echo $threshold | awk '{print $NF}'` # get the last setup
+echo trigger threshold: $threshold ADC unit
 
 # fetch record length and post trigger percentage
-len=`awk '/^RECORD_LENGTH[ \t]/{print tolower($2)}' $cfg`
+len=`awk '/^RECORD_LENGTH[ \t]/{print $2}' $cfg`
 echo record length: $len samples
-post_trg=`awk '/^POST_TRIGGER[ \t]/{print tolower($2)}' $cfg`
+post_trg=`awk '/^POST_TRIGGER[ \t]/{print $2}' $cfg`
 
 pct=10 # percent of record length for baseline calculation
 if [[ $post_trg -lt $pct ]]; then pct=$post_trg; fi
