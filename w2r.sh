@@ -47,9 +47,9 @@ v=`awk '/^PULSE_POLARITY[ \t]/{print tolower($2)}' $cfg`
 if [[ "$v" == negative ]]; then polarity=-1; fi
 echo polarity: $v
 
-# fetch trigger threshold
+# fetch the last trigger threshold setup
 threshold=`awk '/^TRIGGER_THRESHOLD[ \t]/{print $2}' $cfg`
-threshold=`echo $threshold | awk '{print $NF}'` # get the last setup
+threshold=`echo $threshold | awk '{print $NF}'`
 echo trigger threshold: $threshold ADC unit
 
 # fetch record length and post trigger percentage
