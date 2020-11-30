@@ -34,9 +34,15 @@ if [ ! -f "$cfg" ]; then echo "$cfg does not exist!"; exit; fi
 # fetch model number of digitizer from the configuration file
 model=`awk '/^#[ ]+Digitizer:[ \t]/{print $NF}' $cfg`
 byte=2 # length of a sample value
+bits=14 # precision of digitizer (2^bits)
 if [[ "$model" =~ ^7[2-6][0-5]$ ]]; then 
-  if [[ $model == 721 ]] || [[ $model == 731 ]]; then byte=1; fi
-  echo digitizer: $model
+  if [[ $model -gt 750 ]]; then bits=10;
+  elif [[ $model -ge 740 ]]; then bits=12;
+  elif [[ $model -eq 720 ]]; then bits=12;
+  else
+    if [[ $model =~ 7[2-3]1 ]]; then byte=1; fi
+  fi
+  echo digitizer: $model \($bits-bit\)
 else
   echo digitizer: $model not recogized
 fi
@@ -44,13 +50,14 @@ fi
 # fetch polarity setup from the configuration file
 polarity=1 # default value
 v=`awk '/^PULSE_POLARITY[ \t]/{print tolower($2)}' $cfg`
+if [[ X"$v" == X ]]; then v=positive; fi
 if [[ "$v" == negative ]]; then polarity=-1; fi
 echo polarity: $v
 
 # fetch the last trigger threshold setup
 threshold=`awk '/^TRIGGER_THRESHOLD[ \t]/{print $2}' $cfg`
 threshold=`echo $threshold | awk '{print $NF}'`
-echo trigger threshold: $threshold ADC unit
+echo trigger threshold: $threshold ADC
 
 # fetch record length and post trigger percentage
 len=`awk '/^RECORD_LENGTH[ \t]/{print $2}' $cfg`
@@ -63,4 +70,4 @@ nbase=`echo - | awk -v l="$len" -v p="$pct" '{printf "%.0f", l*p/100}'`
 echo number of samples to calculate baseline: $nbase
 
 # pass arguments to w2r.C
-root -b -q -l w2r.C"($run,$ch,$threshold,$polarity,$nbase,$byte)"
+root -b -q -l w2r.C"($run,$ch,$threshold,$polarity,$nbase,$byte,$bits)"
