@@ -1,5 +1,4 @@
-# TOWARD
-Tools, Objects for Waveform Analysis, Reformatting & Drawing
+![ TOWARD - Tools, Objects for Waveform Analysis, Reformatting & Drawing](run/0/logo.png)
 
 ## Prerequisites
 
