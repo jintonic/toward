@@ -18,6 +18,7 @@ void i2q(int run=0, int ch=0)
  	t->Branch("tl",&tl,"tl/I"); // location of the lowest point
 
 	int nevt=tadc->GetEntries();
+	cout<<"Processing "<<nevt<<" events..."<<endl;
 	for (int ievt=0; ievt<nevt; ievt++) {
 		tadc->GetEntry(ievt);
 		if (ievt%100==0) cout<<"Processing event "<<ievt<<endl;
