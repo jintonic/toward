@@ -28,6 +28,14 @@ CERN [ROOT][] is needed to run scripts ended with `.C`. [Shell scripts][sh] can 
 - Scripts can be run directly in [ROOT][] without compilation
 - Works with [WaveDump][] without any modification of code on both sides
 - Cross major platforms: Linux, Mac, and Windows
+- Data are saved as basic types in [ROOT][] [TTree][] [ntuple][]s, which can be easily open without loading extra libraries defining complicated data structure. [Uproot][] can be used to load the data for analysis in [Python][]
+- Super short variable names for quick analysis using [ROOT][] [TTree][]::[Draw][] function in a [ROOT interactive session](https://root.cern.ch/root/html534/guides/users-guide/GettingStarted.html). For example,
+```cpp
+[root] t->Draw("s:Iteration$","is==0","l",5,2)
+```
+shows 5 non-saturated (`is==0`) waveforms (`s`: individual waveform samples, [Iterations][Draw]\$: sample index) starting from event 2:
+
+![waveform display using simple TTree variables](run/0/wfs.png)
 
 [ROOT]:https://root.cern.ch
 [CAEN]:https://www.caen.it/
@@ -35,3 +43,8 @@ CERN [ROOT][] is needed to run scripts ended with `.C`. [Shell scripts][sh] can 
 [sh]:https://www.shellscript.sh/
 [MobaXterm]:https://mobaxterm.mobatek.net/
 [tree]:https://root.cern.ch/doc/master/classTTree.html#addcoltoexistingtree
+[TTree]: https://root.cern.ch/root/htmldoc/guides/users-guide/Trees.html
+[ntuple]:https://en.wikipedia.org/wiki/Tuple
+[Uproot]:https://github.com/scikit-hep/uproot4
+[Python]:https://www.python.org/
+[Draw]:https://root.cern.ch/doc/master/classTTree.html#a73450649dc6e54b5b94516c468523e45
