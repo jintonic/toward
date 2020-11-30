@@ -52,7 +52,7 @@ polarity=1 # default value
 v=`awk '/^PULSE_POLARITY[ \t]/{print tolower($2)}' $cfg`
 if [[ X"$v" == X ]]; then v=positive; fi
 if [[ "$v" == negative ]]; then polarity=-1; fi
-echo polarity: $v
+echo pulse polarity: $v
 
 # fetch the last trigger threshold setup
 threshold=`awk '/^TRIGGER_THRESHOLD[ \t]/{print $2}' $cfg`
