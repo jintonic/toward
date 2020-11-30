@@ -17,7 +17,7 @@ void q2i(int run=0, int ch=0, int l=1000, int m=500, float M=11480)
 	tadc->SetBranchAddress("s",&a); // charge samples in ADC units
 	tadc->SetBranchAddress("n",&ns); // number of samples
 
-	TFile *output = new TFile(Form("run/%d/current%d.root",run,ch), "recreate");
+	TFile *output = new TFile(Form("run/%d/i%d.root",run,ch), "recreate");
 	TTree * t = new TTree("t", Form("current waveforms from ch %d",ch));
 	int t5, t10, t50, t90;
 	float h, s[99999], d[99999], p[99999], q[99999], i[99999];
