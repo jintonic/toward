@@ -48,7 +48,7 @@ void w2r(int run=0, int ch=0, float thr=10, float polarity=1,
 		input->read(reinterpret_cast<char*>(&evt),4); // event id
 		input->read(reinterpret_cast<char*>(&ttt),4); // trigger time tag
 
-		if (evt%1000==0) cout<<"Processing event "<<evt<<endl;
+		if (evt%10000==0) cout<<"Processing event "<<evt<<endl;
 		b=db=is=0; h=-9999; l=9999; tt=-1; // reset variables for each new waveform
 		n = (len-24)/ssize; // number of waveform samples
 		for (int i=0; i<n; i++) {
@@ -69,9 +69,9 @@ void w2r(int run=0, int ch=0, float thr=10, float polarity=1,
 
 		tree->Fill();
 	}
-	cout<<evt<<" events processed"<<endl;
 	input->close();
 
 	tree->Write("", TObject::kOverwrite);
 	output->Close();
+	cout<<"File "<<output->GetName()<<" saved"<<endl;
 }

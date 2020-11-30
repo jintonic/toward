@@ -66,8 +66,7 @@ void q2i(int run=0, int ch=0, int l=1000, int m=500, float M=11480)
 
 		t->Fill();
 	}
-	cout<<nevt<<" events processed"<<endl;
 	t->Write("",TObject::kOverwrite);
-
 	output->Close();
+	cout<<"File "<<output->GetName()<<" saved"<<endl;
 }

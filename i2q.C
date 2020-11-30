@@ -29,8 +29,7 @@ void i2q(int run=0, int ch=0)
 
 		t->Fill();
 	}
-	cout<<nevt<<" events processed"<<endl;
 	t->Write("",TObject::kOverwrite);
-
 	output->Close();
+	cout<<"File "<<output->GetName()<<" saved"<<endl;
 }
