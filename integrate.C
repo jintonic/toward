@@ -1,7 +1,8 @@
 // Integrate waveforms in [min, max). If min, max are not specified,
 //   min = threshold crossing point - front
 //   max = downward zero crossing point + back
-void npe(int run=0, int ch=1, int min=0, int max=0, int front=50, int back=10)
+void integrate(int run=0, int ch=1, int min=0, int max=0,
+	 	int front=50, int back=10)
 {
 	TFile *file = new TFile(Form("run/%d/wave%d.root",run,ch),"update");
 	TTree *t = (TTree*) file->Get("t");
