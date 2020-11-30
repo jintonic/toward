@@ -55,9 +55,19 @@ if [[ "$v" == negative ]]; then polarity=-1; fi
 echo pulse polarity: $v
 
 # fetch the last trigger threshold setup
-threshold=`awk '/^TRIGGER_THRESHOLD[ \t]/{print $2}' $cfg`
-threshold=`echo $threshold | awk '{print $NF}'`
-echo trigger threshold: $threshold ADC
+threshold=0 # no threshold is needed in case of external trigger
+extrg=`awk '/^EXTERNAL_TRIGGER[ \t]/{print $2}' $cfg`
+if [[ "$extrg"X == X ]]; then # if EXTERNAL_TRIGGER is not set
+  echo external trigger: ACQUISITION_ONLY # default value
+else # if EXTERNAL_TRIGGER is set
+  if [[ "$extrg" != "DISABLED" ]]; then
+    echo external trigger: $extrg
+  else # EXTERNAL_TRIGGER is disabled
+    threshold=`awk '/^TRIGGER_THRESHOLD[ \t]/{print $2}' $cfg`
+    threshold=`echo $threshold | awk '{print $NF}'`
+    echo trigger threshold: $threshold ADC
+  fi
+fi
 
 # fetch record length and post trigger percentage
 len=`awk '/^RECORD_LENGTH[ \t]/{print $2}' $cfg`

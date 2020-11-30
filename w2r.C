@@ -63,7 +63,7 @@ void w2r(int run=0, int ch=0, float thr=10, float polarity=1,
 			s[i]-=b; if (i<nbase) db+=s[i]*s[i];
 			if (h<s[i]) { h=s[i]; th=i; }
 			if (l>s[i]) { l=s[i]; tl=i; }
-			if (s[i]>thr && tt==-1) tt=i;
+			if (thr!=0 && s[i]>thr && tt==-1) tt=i;
 	 	}
 		db=sqrt(db/nbase); // get baseline RMS
 
