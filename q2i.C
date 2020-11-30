@@ -31,9 +31,10 @@ void q2i(int run=0, int ch=0, int l=1000, int m=500, float M=11480)
  	t->Branch("i",i,"i[n]/F"); // samples of the current pulse
 
 	int nevt=tadc->GetEntries();
+	cout<<"Processing "<<nevt<<" events..."<<endl;
 	for (int ievt=0; ievt<nevt; ievt++) {
 		tadc->GetEntry(ievt);
-		if (ievt%100==0) cout<<"Processing event "<<ievt<<endl;
+		if (ievt%1000==0) cout<<"Processing event "<<ievt<<endl;
 		
 		// 5-point smoothing
 		q[0]=a[0]; q[1]=a[1]; q[2]=a[2];
