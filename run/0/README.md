@@ -14,6 +14,7 @@ $ mkdir -p ~/.vim/after/syntax
 $ cp cfg.vim ~/.vim/after/syntax
 ```
 [ch1.cfg](ch1.cfg) looks like the following in vim with [syntax highlighting][1] enabled:
+
 ![wavedump config file syntax highlighting in vim](vim.png)
 
 According to the WaveDump [manual][], each event starts with six 32-bit integers (HEADER):
