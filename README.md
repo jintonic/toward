@@ -9,9 +9,11 @@ CERN [ROOT][] is needed to run scripts ended with `.C`. [Shell scripts][sh] can 
 
 ## Scripts
 
-- [w2r.C](w2r.C): a [ROOT][] script to convert a [CAEN][] [WaveDump][] binary output to [ROOT][] format
-- [w2r.sh](w2r.sh): a [shell script][sh] to call [w2r.C](w2r.C)
-- [q2i.C](q2i.C): a [ROOT][] script to get basic parameters of digitized charge pulses using [trapezoidal filter](https://nukephysik101.wordpress.com/2020/03/20/trapezoid-filter/) and convert the charge pulses to current ones using [numerical differentiation](https://terpconnect.umd.edu/%7Etoh/spectrum/Differentiation.html)
+- [w2r.C](w2r.C): a [ROOT][] script to convert a [CAEN][] [WaveDump][] binary output to [ROOT][] format, align baselines of waveforms to zero, and save basic parameters of waveforms
+- [w2r.sh](w2r.sh): a [shell script][sh] to fetch information from a [WaveDump][] configuration file and pass it to [w2r.C](w2r.C)
+- [q2i.C](q2i.C): a [ROOT][] script to get heights of charge pulses using [trapezoidal filter](https://nukephysik101.wordpress.com/2020/03/20/trapezoid-filter/) and convert charge pulses to current ones using [numerical differentiation](https://terpconnect.umd.edu/%7Etoh/spectrum/Differentiation.html)
+- [i2q.C](i2q.C): a [ROOT][] script to convert current pulses to charge ones
+- [npe.C](npe.C): a [ROOT][] script to integrate waveforms in a certain range for generating the distribution of number of photoelectrons (PE)
 
 ## Features
 
