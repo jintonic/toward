@@ -17,6 +17,8 @@ $ cp cfg.vim ~/.vim/after/syntax
 
 ![wavedump config file syntax highlighting in vim](vim.png)
 
+## Binary data structure
+
 According to the WaveDump [manual][], each event starts with six 32-bit integers (HEADER):
 
 1. event size in byte (HEADER size + sample size)
@@ -32,6 +34,6 @@ and followed by sample values as 16 or 8-bit integers.
 [vim]:https://www.vim.org/
 [CAEN]:https://www.caen.it/
 [WaveDump]:https://www.caen.it/products/caen-wavedump/
-[DT5720]:https://www.caen.it/products/dt5720/
+[DT5751]:https://www.caen.it/products/dt5751/
 [TOWARD]:https://github.com/jintonic/toward
 [manual]:https://usermanual.wiki/Document/UM2091WaveDumpUserManualrev13.87092449/view
