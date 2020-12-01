@@ -2,3 +2,4 @@
 *.out
 *.root
 PlotData.txt
+run/*
