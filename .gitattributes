@@ -1,1 +1,2 @@
+# https://github.com/github/linguist#overrides
 *.C linguist-language=C++
