@@ -12,7 +12,7 @@ The way to organize digital waveform data depends on analysis tools and ecosyste
 
 [Binary waveform data](0#output-file-settings) from [WaveDump][] should be saved as runs in this directory.
 
-Run [0](0) contains example data. They serve as test input of the [processing scripts](TOWARD). One can experience the power of [TOWARD][] without physically owning a [CAEN][] [digitizer][].
+Run [0](0) contains example data. They serve as test input of the [processing scripts](TOWARD). One can use them to experience the power of [TOWARD][] without physically owning a [CAEN][] [digitizer][].
 
 To create a new run, for example, **run 1**,  make a new folder here and simply name it **1**. Create a [WaveDump][] configuration file, `daq.cfg` in that folder and run `wavedump daq.cfg` in it. In order for [../w2r.sh](../w2r.sh) to process the configuration file properly, please don't name it other than `daq.cfg`. Settings that can be tuned in the configuration file can be found in the [WaveDump mannual](https://usermanual.wiki/Document/UM2091WaveDumpUserManualrev13.87092449/view). One can also copy [0/daq.cfg](0/daq.cfg) to `1/daq.cfg` and modify it as needed.
 
