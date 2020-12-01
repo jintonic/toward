@@ -1,12 +1,15 @@
 ![ TOWARD - Tools, Objects for Waveform Analysis, Reformatting & Drawing](run/0/logo.png)
 
-Simple [Bash][] and [ROOT][] scripts for the process of digital waveforms taken with a [CAEN][] [digitizer][] and its [WaveDump][] readout program.
+[Bash][] and [ROOT][] scripts for the process of digital waveforms taken with a [CAEN][] [digitizer][] and its [WaveDump][] readout program.
 
 [Bash]:https://en.wikipedia.org/wiki/Bash_(Unix_shell)
 [ROOT]:https://root.cern.ch
 [CAEN]:https://www.caen.it/
 [digitizer]:https://www.caen.it/sections/digitizer-families/
 [WaveDump]:https://www.caen.it/products/caen-wavedump/
+
+[![Data structure](https://img.shields.io/badge/data-structure-blue?style=flat)](run)
+[![Examples](https://img.shields.io/badge/example-data-red?style=flat)](run/0)
 
 ## Prerequisites
 
@@ -21,7 +24,7 @@ CERN [ROOT][] is needed to run scripts ended with `.C`. [Shell scripts][sh] can 
 
 - download the package from <https://github.com/jintonic/toward.git>
 - get into folder [run](run) in your local copy, create a directory there with its name to be an integer run number, for example, **153**
-- get into the just created subdirectory and create a [WaveDump][] configuration file there named **daq.cfg** (one can take [run/0/ch0.cfg](run/0/ch0.cfg) as an example)
+- get into the just created subdirectory and create a [WaveDump][] configuration file there named **daq.cfg** (one can take [run/0/daq.cfg](run/0/daq.cfg) as an example)
 - run `wavedump daq.cfg` there to create binary output file **wave?.dat**, where **?** is the channel number
 - get back to the base directory, run `./w2r.sh <run number> <channel number>` to convert **wave?.dat** to **wave?.root**
 - use other scripts to process the generated root file
@@ -36,9 +39,9 @@ CERN [ROOT][] is needed to run scripts ended with `.C`. [Shell scripts][sh] can 
 
 ## Features
 
-- All scripts can be run directly without compilation in Linux, Mac and Windows
 - Works with [WaveDump][] without any modification of code on both sides
-- Data are saved as basic types in [ROOT][] [TTree][] [ntuple][]s, which can be easily open without loading extra libraries defining complicated data structure. [Uproot][] can be used to load the data for analysis in [Python][]
+- All scripts can be run directly in Linux, Mac and Windows without compilation and installation
+- [Data](run#data-structure) are saved as basic types in [ROOT][] [TTree][] [ntuple][]s, which can be easily open without loading extra libraries defining complicated data structure. [Uproot][] can be used to load the data for analysis in [Python][]
 - Super short variable names for quick analysis using [ROOT][] [TTree][]::[Draw][] function in a [ROOT interactive session](https://root.cern.ch/root/html534/guides/users-guide/GettingStarted.html). For example,
 ```cpp
 [root] t->Draw("s:Iteration$","is==0","l",5,2)
