@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import tkinter
+from tkinter import Tk, Entry, TOP, BOTTOM, BOTH
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 # handle default matplotlib key bindings
 from matplotlib.backend_bases import key_press_handler
@@ -13,27 +13,37 @@ b = t.arrays()
 fig = Figure(figsize=(5, 4), dpi=100)
 fig.add_subplot(111).plot(b[b's'][0])
 
-root = tkinter.Tk()
-root.wm_title("Embedding in Tk")
+window = Tk()
+window.wm_title("displaying event 0/125 in run 0")
 
-canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
+canvas = FigureCanvasTkAgg(fig, master=window)  # A tk.DrawingArea.
 canvas.draw()
-canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
+canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 
-def _quit():
-    root.quit()     # stops mainloop
-    root.destroy()  # this is necessary on Windows to prevent
-                    # Fatal Python Error: PyEval_RestoreThread: NULL tstate
+def run_cmd():
+    cmdline.get()
 
-def on_key_press(event):
+cmdline=Entry(window)
+cmdline.pack(side=BOTTOM, fill=BOTH)
+cmdline.bind('<Escape>', canvas.get_tk_widget().focus_set())
+cmdline.bind('<Return>', run_cmd())
+ 
+def handle_key_press(event):
     print("you pressed {}".format(event.key))
-    key_press_handler(event, canvas)
-    if format(event.key) == "q" or format(event.key) == "escape":
-        _quit()
+    if format(event.key) == "q":
+        window.quit()    # stop mainloop
+        window.destroy() # necessary on Windows to prevent fatal error
+    elif format(event.key) == "escape":
+        cmdline.clear()
+        canvas.get_tk_widget().focus_set()
+    if format(event.key)=="g":
+        cmdline.focus_set()
+    else:
+        key_press_handler(event, canvas)
 
-canvas.mpl_connect("key_press_event", on_key_press)
+canvas.mpl_connect("key_press_event", handle_key_press)
 
-# If you put root.destroy() here, it will cause an error if the window is
+# If you put window.destroy() here, it will cause an error if the window is
 # closed with the window manager.
 
 # https://stackoverflow.com/questions/17774859
@@ -43,4 +53,4 @@ from platform import system as platform
 if platform() == 'Darwin':  # How Mac OS X is identified by Python
     system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
 
-root.mainloop()
+window.mainloop()
