@@ -1,8 +1,9 @@
 ![ TOWARD - Tools, Objects for Waveform Analysis, Reformatting & Drawing](run/0/logo.png)
 
-[Bash][] and [ROOT][] scripts for the process of digital waveforms taken with a [CAEN][] [digitizer][] and its [WaveDump][] readout program.
+[Bash][], [Python][] and [ROOT][] scripts for the process of digital waveforms taken with a [CAEN][] [digitizer][] and its [WaveDump][] readout program.
 
 [Bash]:https://en.wikipedia.org/wiki/Bash_(Unix_shell)
+[Python]:https://www.python.org/
 [ROOT]:https://root.cern.ch
 [CAEN]:https://www.caen.it/
 [digitizer]:https://www.caen.it/sections/digitizer-families/
@@ -36,6 +37,7 @@ CERN [ROOT][] is needed to run scripts ended with `.C`. [Shell scripts][sh] can 
 - [q2i.C](q2i.C): a [ROOT script][] to get heights of charge pulses using [trapezoidal filter](https://nukephysik101.wordpress.com/2020/03/20/trapezoid-filter/) and convert charge pulses to current ones using [numerical differentiation](https://terpconnect.umd.edu/%7Etoh/spectrum/Differentiation.html)
 - [i2q.C](i2q.C): a [ROOT script][] to convert current pulses to charge ones
 - [integrate.C](integrate.C): a [ROOT script][] to integrate waveforms in a certain range and save the result to the original data [tree][]
+- [show.py](show.py): a [Python][] script to show waveforms in a [ROOT][] file.
 
 ## Features
 
@@ -54,6 +56,5 @@ shows 5 non-saturated (`is==0`) waveforms (`s`: individual waveform samples, [It
 [TTree]: https://root.cern.ch/root/htmldoc/guides/users-guide/Trees.html
 [ntuple]:https://en.wikipedia.org/wiki/Tuple
 [Uproot]:https://github.com/scikit-hep/uproot4
-[Python]:https://www.python.org/
 [Draw]:https://root.cern.ch/doc/master/classTTree.html#a73450649dc6e54b5b94516c468523e45
 [ROOT script]:https://root.cern.ch/root/htmldoc/guides/users-guide/Cling.html
