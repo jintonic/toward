@@ -17,41 +17,36 @@ hotkeys='''
 0-7:        toggle channel 0 to 7
 <Space>:    next event
 b:          previous event
+q:          quit
 '''
 
-# check directory structure
-from glob import glob
-runs=glob("run/[0-9]*/");
-for each in runs:
-    if not each[4:-1].isdigit():
-        warning=each+" doesn't follow naming scheme, quit"
-        print(warning); exit()
+# get the largest run in run/*/
+runs=[]
+from os import scandir, path
+with scandir('run') as dirs:
+    for folder in dirs:
+        if folder.name.isdigit(): runs.append(folder.name)
+runs.sort(); run=runs[-1]
 
 # get run number
-runs.sort(); run=runs[-1][4:-1] # get the biggest run
 from sys import argv
 if len(argv)>1: # if run number is specified
-    if ("run/"+argv[1]+"/" in runs): run=argv[1]
+    if argv[1] in runs: run=argv[1]
     else: print("no run/"+argv[1]+"/, quit"); exit()
 
 # check root files
-s="run/"+run+"/wave[0-7].root"
-files=glob(s); nch=len(files)
-if nch==0: print("cannot find "+s+", quit"); exit()
-#for each in range(nch):
-    
-#print(s)
-
-print("check data in the following files:")
+folder="run/"+run+"/"
+print("check ROOT files in "+folder+":")
 import uproot4
-t=[0]*8; n=[0]*8; files.sort()
-for each in files:
-    #file="run/"+run+"/wave"+str(ch)+".root"
-    #if file in files:
-    t[ch]=uproot4.open(each)['t'].arrays()
-    n[ch]=len(t[ch])
-    # https://stackoverflow.com/questions/51252580
-    print(each+" contains "+str(n[ch])+" events")
+t=[0]*8; n=[0]*8; nfiles=0
+for ch in range(8):
+    file=folder+"wave"+str(ch)+".root"
+    if path.exists(file):
+        t[ch]=uproot4.open(file)['t'].arrays()
+        n[ch]=len(t[ch])
+        print(file+" contains "+str(n[ch])+" events")
+        if n[ch]>0: nfiles+=1
+if nfiles<1: print("no root file in "+folder+", quit"); exit()
 
 # title bar
 for ch in range(8):
