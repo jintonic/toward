@@ -43,11 +43,23 @@ It is followed by waveform samples as 16 or 8-bit integers.
 
 ### Syntax highlighting
 
-[cfg.vim](cfg.vim) enables [syntax highlighting][1] of a [WaveDump][] configuration file in [vim][]. It can be installed the following way in Linux or Mac:
+[WDcfg.vim](WDcfg.vim) enables [syntax highlighting][1] of a [WaveDump][] configuration file in [vim][]. It can be installed the following way in Linux or Mac:
 
 ```sh
 $ mkdir -p ~/.vim/after/syntax
-$ cp cfg.vim ~/.vim/after/syntax
+$ cp WDcfg.vim ~/.vim/after/syntax
+```
+
+If you don't have file `~/.vim/after/filetype.vim`, create one and put the following content in it to let [vim][] recognize the `filetype` of `WaveDumpConfig.txt` as `WDcfg` instead of `text`:
+
+```vim
+if exists("did_load_filetypes_userafter")
+  finish
+endif
+let did_load_filetypes_userafter = 1
+augroup filetypedetect
+  au! BufNewFile,BufRead WaveDumpConfig*.txt if &ft == 'text' | set ft=WDcfg | endif
+augroup END
 ```
 
 A [WaveDump][] configuration file may look like the following in vim with [syntax highlighting][1] enabled:

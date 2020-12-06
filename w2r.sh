@@ -26,8 +26,8 @@ echo -e "run: $run \nchannel: $ch"
 input="run/$run/wave$ch.dat"
 if [ ! -f "$input" ]; then echo "$input does not exist!"; exit; fi
 
-# check if WaveDump configuration file "daq.cfg" exists
-cfg="run/$run/daq.cfg"
+# check if WaveDump configuration file "WaveDumpConfig.txt" exists
+cfg="run/$run/WaveDumpConfig.txt"
 if [[ $run -eq 0 ]]; then cfg="run/$run/ch$ch.cfg"; fi
 if [ ! -f "$cfg" ]; then echo "$cfg does not exist!"; exit; fi
 
