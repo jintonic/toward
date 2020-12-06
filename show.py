@@ -35,7 +35,6 @@ if len(argv)>1: # if run number is specified
     else: print("no run/"+argv[1]+"/, quit"); exit()
 
 # check root files
-<<<<<<< HEAD
 folder="run/"+run+"/"
 print("check ROOT files in "+folder+":")
 import uproot4
