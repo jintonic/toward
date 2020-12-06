@@ -38,23 +38,28 @@ if len(argv)>1: # if run number is specified
 s="run/"+run+"/wave[0-7].root"
 files=glob(s); nch=len(files)
 if nch==0: print("cannot find "+s+", quit"); exit()
+#for each in range(nch):
+    
+#print(s)
 
 print("check data in the following files:")
 import uproot4
 t=[0]*8; n=[0]*8; files.sort()
-for ch in range(8):
-    file="run/"+run+"/wave"+str(ch)+".root"
-    if file in files:
-        t[ch]=uproot4.open(file)['t'].arrays()
-        n[ch]=len(t[ch])
+for each in files:
+    #file="run/"+run+"/wave"+str(ch)+".root"
+    #if file in files:
+    t[ch]=uproot4.open(each)['t'].arrays()
+    n[ch]=len(t[ch])
     # https://stackoverflow.com/questions/51252580
-    print(file+" contains "+str(n[ch])+" events")
+    print(each+" contains "+str(n[ch])+" events")
 
 # title bar
 for ch in range(8):
     if n[ch]>0:
         title="event 0/"+str(n[ch])+" in run "+run+" (press h for help)"
         break
+    else:
+        print("no event, quit"); exit()
 from tkinter import Tk, Entry, TOP, BOTTOM, BOTH
 window = Tk(); window.wm_title(title)
 
