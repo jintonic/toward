@@ -2,6 +2,7 @@
 
 [Bash][], [Python][] and [ROOT][] scripts for the process of digital waveforms taken with a [CAEN][] [digitizer][] and its [WaveDump][] readout program.
 
+[Git]:https://git-scm.com/
 [Bash]:https://en.wikipedia.org/wiki/Bash_(Unix_shell)
 [Python]:https://www.python.org/
 [ROOT]:https://root.cern.ch
@@ -20,6 +21,16 @@ CERN [ROOT][] is needed to run scripts ended with `.C`. [Shell scripts][sh] can 
 
 [sh]:https://www.shellscript.sh/
 [MobaXterm]:https://mobaxterm.mobatek.net/
+
+### Windows
+
+- install [Git][]
+- install CERN [ROOT][]
+- install [Python][] 
+- open Git Bash
+- run `pip install --upgrade pip` to upgrade pip
+- run `pip install awkward` to install 'awkard' package
+- run `pip install uproot4` to install 'uproot4' package
 
 ## Get started
 
