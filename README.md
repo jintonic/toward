@@ -25,8 +25,8 @@ CERN [ROOT][] is needed to run scripts ended with `.C`. [Shell scripts][sh] can 
 
 - download the package from <https://github.com/jintonic/toward.git>
 - get into folder [run](run) in your local copy, create a directory there with its name to be an integer run number, for example, **153**
-- get into the just created subdirectory and create a [WaveDump][] configuration file there named **daq.cfg** (one can take [run/0/daq.cfg](run/0/daq.cfg) as an example)
-- run `wavedump daq.cfg` there to create binary output file **wave?.dat**, where **?** is the channel number
+- get into the just created subdirectory and create a [WaveDump][] configuration file there named **WaveDumpConfig.txt** (one can take [run/0/WaveDumpConfig.txt](run/0/WaveDumpConfig.txt) as an example)
+- run `wavedump WaveDumpConfig.txt` there to create binary output file **wave?.dat**, where **?** is the channel number
 - get back to the base directory, run `./w2r.sh <run number> <channel number>` to convert **wave?.dat** to **wave?.root**
 - use other scripts to process the generated root file
 

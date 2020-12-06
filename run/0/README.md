@@ -11,7 +11,7 @@
 
 ## WaveDump configurations
 
-- [daq.cfg](daq.cfg) is an example [WaveDump][] configuration file that can be copied to other runs as a starting point for customization
+- [WaveDumpConfig.txt](WaveDumpConfig.txt) is an example [WaveDump][] configuration file that can be copied to other runs as a starting point for customization
 - [ch0.cfg](ch0.cfg) contains detailed comments on common [WaveDump][] settings
 - [ch1.cfg](ch1.cfg) contains minimal comments on common [WaveDump][] setting blocks
 - [ch2.cfg](ch2.cfg) contains only necessary settings without any comments
