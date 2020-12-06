@@ -34,9 +34,13 @@ if len(argv)>1: # if run number is specified
     if ("run/"+argv[1]+"/" in runs): run=argv[1]
     else: print("no run/"+argv[1]+"/, quit"); exit()
 
+#change workdir
+import os
+os.chdir("run/"+run)
+
 # check root files
 import glob
-s=r"run/"+run+"/wave[0-7].root"
+s=r"wave[0-7].root"
 files=glob.glob(s); nch=len(files)
 if nch==0: print("cannot find "+s+", quit"); exit()
 #for each in range(nch):
@@ -46,7 +50,7 @@ print("check data in the following files:")
 import uproot4
 t=[0]*8; n=[0]*8; files.sort()
 for ch in range(8):
-    file="run/"+run+"/wave"+str(ch)+".root"
+    file="wave"+str(ch)+".root"
     if file in files:
         t[ch]=uproot4.open(file)['t'].arrays()
         n[ch]=len(t[ch])
