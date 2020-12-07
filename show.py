@@ -53,8 +53,6 @@ for ch in range(8):
     if n[ch]>0:
         title="event 0/"+str(n[ch])+" in run "+run+" (press h for help)"
         break
-    else:
-        print("no event, quit"); exit()
 from tkinter import Tk, Entry, TOP, BOTTOM, BOTH
 window = Tk(); window.wm_title(title)
 
