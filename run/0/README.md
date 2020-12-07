@@ -8,13 +8,15 @@
 - wave0.dat contains waveforms from a charge-sensitive pre-amplifier with a [DT5751][] digitizer
 - wave1.dat contains waveforms from a Hamamatsu SiPM module with a [DT5751][] digitizer
 - wave2.dat contains waveforms from a NaI(Tl) detector with a [DT5751][] digitizer
+- wave3.dat contains waveforms from a charge-sensitive pre-amplifier with a [DT5751][] digitizer
 
 ## WaveDump configurations
 
-- [WaveDumpConfig.txt](WaveDumpConfig.txt) is an example [WaveDump][] configuration file that can be copied to other runs as a starting point for customization
+- [WaveDumpConfig.txt](WaveDumpConfig.txt) is an example [WaveDump][] configuration file that can be copied to other runs as a starting point for customization. It also demonstrates how to set up coincident trigger among channels
 - [ch0.cfg](ch0.cfg) contains detailed comments on common [WaveDump][] settings
 - [ch1.cfg](ch1.cfg) contains minimal comments on common [WaveDump][] setting blocks
 - [ch2.cfg](ch2.cfg) contains only necessary settings without any comments
+- [ch3.cfg](ch3.cfg) contains only necessary settings without any comments
 
 ### Output file settings
 
