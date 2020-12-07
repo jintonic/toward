@@ -45,7 +45,7 @@ A few example [WaveDump][] output files named as `wave[0-3].dat` are included in
 
 1. download the package from <https://github.com/jintonic/toward.git>
 2. get to the `toward` directory, run `./w2r.sh <run number> <channel number>` to convert **wave?.dat** to **wave?.root**
-3. run `./show.py <run number>` to show waveforms in the root file. Note that in [Git Bash][] or [MabaXterm][], the command has to be changed to `winpty python show.py <run number>` to enable showing information in the terminal
+3. run `./show.py <run number>` to show waveforms in the root file. Note that in [Git Bash][] or [MobaXterm][], the command has to be changed to `winpty python show.py <run number>` to enable [running Python installed in Windows in a Linux-like terminal](https://stackoverflow.com/questions/48199794/winpty-and-git-bash)
 4. use other scripts to process the generated root file
 
 ### Analyzing new data
