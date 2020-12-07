@@ -47,7 +47,8 @@ for ch in range(8):
         print(file+" contains "+str(n[ch])+" events")
         if n[ch]>0: nfiles+=1
 if nfiles<1: print("no root file in "+folder+", quit"); exit()
-
+    
+    
 # title bar
 for ch in range(8):
     if n[ch]>0:
@@ -104,6 +105,18 @@ def show_next_event():
         if channel[ch].get_visible(): channel[ch].set_ydata(t[ch][b's'][evt])
     canvas.draw()
 
+def jump_event(evt):
+    min=999999999
+    for ch in range(8):
+        if channel[ch]==0:continue
+        if channel[ch].get_visible() and min>n[ch]: min=n[ch]
+    title="event "+str(evt)+"/"+str(min)+" in run "+run+" (press h for help)"
+    window.wm_title(title)
+    for ch in range(8):
+        if channel[ch]==0:continue
+        if channel[ch].get_visible(): channel[ch].set_ydata(t[ch][b's'][evt])
+    canvas.draw()
+    
 def toggle_ch(event):
     ch=int(event.key)
     if channel[ch]==0: return
@@ -129,6 +142,9 @@ canvas.mpl_connect("key_press_event", handle_key_press)
 # https://stackoverflow.com/questions/47475783
 def run_cmd(event):
     print("cmd: "+cmdline.get())
+    if(str.isdigit(cmdline.get())):
+        jump_event(int(cmdline.get()))
+        print("jump to event "+cmdline.get())
 cmdline.bind('<Return>', run_cmd)
 
 # give focus to the GUI window in Mac
