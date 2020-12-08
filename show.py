@@ -86,9 +86,14 @@ def show_previous_event():
     if evt==-1: evt=min-1
     title="event "+str(evt)+"/"+str(min)+" in run "+run+" (press h for help)"
     window.wm_title(title)
+    ax.cla() #clear plots
     for ch in range(8):
         if channel[ch]==0:continue
-        if channel[ch].get_visible(): channel[ch].set_ydata(t[ch][b's'][evt])
+        if channel[ch].get_visible(): 
+            #channel[ch].set_ydata(t[ch][b's'][evt])
+            line,=ax.plot(t[ch][b's'][evt], label="channel "+str(ch))
+            channel[ch]=line
+    ax.legend()
     canvas.draw()
 
 def show_next_event():
@@ -100,9 +105,14 @@ def show_next_event():
     if evt==min: evt=0
     title="event "+str(evt)+"/"+str(min)+" in run "+run+" (press h for help)"
     window.wm_title(title)
+    ax.cla() #clear plots
     for ch in range(8):
         if channel[ch]==0:continue
-        if channel[ch].get_visible(): channel[ch].set_ydata(t[ch][b's'][evt])
+        if channel[ch].get_visible(): 
+            #channel[ch].set_ydata(t[ch][b's'][evt])
+            line,=ax.plot(t[ch][b's'][evt], label="channel "+str(ch))
+            channel[ch]=line
+    ax.legend()
     canvas.draw()
 
 def jump_event(evt):
@@ -112,10 +122,24 @@ def jump_event(evt):
         if channel[ch].get_visible() and min>n[ch]: min=n[ch]
     title="event "+str(evt)+"/"+str(min)+" in run "+run+" (press h for help)"
     window.wm_title(title)
+    ax.cla() #clear plots
     for ch in range(8):
         if channel[ch]==0:continue
-        if channel[ch].get_visible(): channel[ch].set_ydata(t[ch][b's'][evt])
+        if channel[ch].get_visible(): 
+            #channel[ch].set_ydata(t[ch][b's'][evt])
+            line,=ax.plot(t[ch][b's'][evt], label="channel "+str(ch))
+            channel[ch]=line
+    ax.legend()
     canvas.draw()
+
+# Mouse over to display coordinates
+def motion_notify_event(event):
+    if(event.xdata==None or event.ydata==None):
+        title2 = title + "     (None,None)"
+        window.wm_title(title2)
+    else:
+        title2 = title + "     ("+str(int(event.xdata))+","+str(round(event.ydata,2))+")"
+        window.wm_title(title2)
     
 def toggle_ch(event):
     ch=int(event.key)
@@ -138,6 +162,7 @@ def handle_key_press(event):
         key_press_handler(event, canvas)
 
 canvas.mpl_connect("key_press_event", handle_key_press)
+fig.canvas.mpl_connect("motion_notify_event", motion_notify_event)
 
 # https://stackoverflow.com/questions/47475783
 def run_cmd(event):
