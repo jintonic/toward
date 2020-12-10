@@ -72,6 +72,16 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 canvas = FigureCanvasTkAgg(fig, master=window); canvas.draw()
 canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 
+# ZOOM
+import matplotlib.backends.backend_tkagg as tkagg
+tkagg.NavigationToolbar2Tk(canvas, window)
+# to modify the toolbar above: 
+# from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
+# class selfbar(NavigationToolbar2Tk):
+    # def __init__(,,,):
+
+
+
 # command line
 cmdline=Entry(window)
 cmdline.insert(0, "<Tab>: switch in between the canvas above and this cmd line")
