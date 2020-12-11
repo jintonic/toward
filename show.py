@@ -144,11 +144,15 @@ def jump_event(evt):
 
 # Mouse over to display coordinates
 def motion_notify_event(event):
+    min=999999999
+    for ch in range(8):
+        if channel[ch]==0:continue
+        if channel[ch].get_visible() and min>n[ch]: min=n[ch]
     if(event.xdata==None or event.ydata==None):
-        title2 = title + "     (None,None)"
+        title2 = "event "+str(evt)+"/"+str(min)+" in run "+run+" (press h for help)" + "     (None,None)"
         window.wm_title(title2)
     else:
-        title2 = title + "     ("+str(int(event.xdata))+","+str(round(event.ydata,2))+")"
+        title2 = "event "+str(evt)+"/"+str(min)+" in run "+run+" (press h for help)" + "     ("+str(int(event.xdata))+","+str(round(event.ydata,2))+")"
         window.wm_title(title2)
     
 def toggle_ch(event):
