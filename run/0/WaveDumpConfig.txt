@@ -25,7 +25,7 @@ OPEN PCI 0 0 0
 #OPEN PCI 0 0 32100000
 
 # RECORD_LENGTH = number of samples in the acquisition window
-RECORD_LENGTH 2000
+RECORD_LENGTH 6000
 
 # DECIMATION_FACTOR: (ONLY for 740 & 724) change the decimation factor for the
 # acquisition. Options: 1 2 4 8 16 32 64 128  
@@ -35,7 +35,7 @@ RECORD_LENGTH 2000
 # options: 0 to 100
 # On models 742 there is a delay of about 35nsec on signal Fast Trigger TR; the
 # post trigger is added to this delay  
-POST_TRIGGER 50
+POST_TRIGGER 70
 
 #PULSE_POLARITY: input signal polarity. Options: POSITIVE, NEGATIVE
 PULSE_POLARITY POSITIVE
@@ -108,14 +108,14 @@ ENABLE_INPUT NO
 # 50: analog input dynamic range = from -Vpp/2 to 0 
 # 100: analog input dynamic range = null (usually not used)
 #
-BASELINE_LEVEL 10
+BASELINE_LEVEL 20
 
 # TRIGGER_THRESHOLD: threshold for the channel auto trigger (ADC counts)
 # options 0 to 2^N-1 (N=Number of bit of the ADC)
 #  POSITIVE PULSE POLARITY: threshold = baseline + TRIGGER_THRESHOLD
 #  NEGATIVE PULSE POLARITY: threshold = baseline - TRIGGER_THRESHOLD
 #
-TRIGGER_THRESHOLD 5
+TRIGGER_THRESHOLD 30
 
 # CHANNEL_TRIGGER: channel auto trigger settings. When enabled, the ch. auto
 # trg. can be either propagated (ACQUISITION_AND_TRGOUT) or not
