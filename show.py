@@ -52,9 +52,10 @@ if nfiles<1: print("no root file in "+folder+", quit"); exit()
 # title bar
 for ch in range(8):
     if n[ch]>0:
-        title="event 0/"+str(n[ch])+" in run "+run+" (press h for help)"
+        title="There are "+str(n[ch])+" events in run "+run
+        title+=" (press h for help, q to quit)"
         break
-from tkinter import Tk, Entry, TOP, BOTTOM, BOTH
+from tkinter import Tk, Label, Entry, END, TOP, LEFT, BOTH
 window = Tk(); window.wm_title(title)
 
 # canvas
@@ -72,20 +73,52 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 canvas = FigureCanvasTkAgg(fig, master=window); canvas.draw()
 canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 
-# ZOOM
-import matplotlib.backends.backend_tkagg as tkagg
-tkagg.NavigationToolbar2Tk(canvas, window)
-# to modify the toolbar above: 
-# from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
-# class selfbar(NavigationToolbar2Tk):
-    # def __init__(,,,):
+# tool bar
+from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
+toolbar=NavigationToolbar2Tk(canvas, window)
 
+Label(toolbar, text="Event:").pack(side=LEFT)
+evtSpecifier=Entry(toolbar, width=8)
+evtSpecifier.insert(0, str(evt))
+evtSpecifier.pack(side=LEFT)
+Label(toolbar, text="Run:").pack(side=LEFT)
+runSpecifier=Entry(toolbar, width=3)
+runSpecifier.insert(0, run)
+runSpecifier.pack(side=LEFT)
 
+# functions and associated key bindings
+def jump_to_event(event):
+    evtSpecified = evtSpecifier.get() # get user specified event number
+    if not evtSpecified.isdigit(): return
+    # find the minimal total number of events in all 8 channels
+    min=999999999
+    for ch in range(8):
+        if channel[ch]==0:continue # skip empty channel
+        if channel[ch].get_visible() and min>n[ch]: min=n[ch]
+    # set the current event
+    global evt;
+    if int(evtSpecified) < 0: evt=0
+    elif int(evtSpecified) > min: evt=min-1
+    else: evt=int(evtSpecified)
+    
+    # update the title bar
+    title="There are "+str(min)+" events in run "+run
+    title+=" (press h for help, q to quit)"
+    window.wm_title(title)
 
-# command line
-cmdline=Entry(window)
-cmdline.insert(0, "<Tab>: switch in between the canvas above and this cmd line")
-cmdline.pack(side=BOTTOM, fill=BOTH)
+    # update canvas
+    for ch in range(8):
+        if channel[ch]==0:continue
+        if channel[ch].get_visible(): channel[ch].set_ydata(t[ch][b's'][evt])
+    ax.relim(); ax.autoscale_view(); ax.legend(); canvas.draw()
+
+# https://stackoverflow.com/a/42194708/1801749
+def discard_modification(event): canvas.get_tk_widget().focus_force()
+
+# https://stackoverflow.com/questions/47475783
+evtSpecifier.bind('<Return>', jump_to_event)
+evtSpecifier.bind('<Escape>', discard_modification)
+runSpecifier.bind('<Escape>', discard_modification)
 
 def show_previous_event():
     min=999999999
@@ -94,17 +127,14 @@ def show_previous_event():
         if channel[ch].get_visible() and min>n[ch]: min=n[ch]
     global evt; evt-=1
     if evt==-1: evt=min-1
-    title="event "+str(evt)+"/"+str(min)+" in run "+run+" (press h for help)"
+    evtSpecifier.delete(0, END); evtSpecifier.insert(0, str(evt));
+    title="There are "+str(min)+" events in run "+run
+    title+=" (press h for help, q to quit)"
     window.wm_title(title)
-    ax.cla() #clear plots
     for ch in range(8):
         if channel[ch]==0:continue
-        if channel[ch].get_visible(): 
-            #channel[ch].set_ydata(t[ch][b's'][evt])
-            line,=ax.plot(t[ch][b's'][evt], label="channel "+str(ch))
-            channel[ch]=line
-    ax.legend()
-    canvas.draw()
+        if channel[ch].get_visible(): channel[ch].set_ydata(t[ch][b's'][evt])
+    ax.relim(); ax.autoscale_view(); ax.legend(); canvas.draw()
 
 def show_next_event():
     min=999999999
@@ -113,54 +143,21 @@ def show_next_event():
         if channel[ch].get_visible() and min>n[ch]: min=n[ch]
     global evt; evt+=1;
     if evt==min: evt=0
-    title="event "+str(evt)+"/"+str(min)+" in run "+run+" (press h for help)"
+    evtSpecifier.delete(0, END); evtSpecifier.insert(0, str(evt));
+    title="There are "+str(min)+" events in run "+run
+    title+=" (press h for help, q to quit)"
     window.wm_title(title)
-    ax.cla() #clear plots
     for ch in range(8):
         if channel[ch]==0:continue
-        if channel[ch].get_visible(): 
-            #channel[ch].set_ydata(t[ch][b's'][evt])
-            line,=ax.plot(t[ch][b's'][evt], label="channel "+str(ch))
-            channel[ch]=line
-    ax.legend()
-    canvas.draw()
+        if channel[ch].get_visible(): channel[ch].set_ydata(t[ch][b's'][evt])
+    ax.relim(); ax.autoscale_view(); ax.legend(); canvas.draw()
 
-def jump_event(evt):
-    min=999999999
-    for ch in range(8):
-        if channel[ch]==0:continue
-        if channel[ch].get_visible() and min>n[ch]: min=n[ch]
-    title="event "+str(evt)+"/"+str(min)+" in run "+run+" (press h for help)"
-    window.wm_title(title)
-    ax.cla() #clear plots
-    for ch in range(8):
-        if channel[ch]==0:continue
-        if channel[ch].get_visible(): 
-            #channel[ch].set_ydata(t[ch][b's'][evt])
-            line,=ax.plot(t[ch][b's'][evt], label="channel "+str(ch))
-            channel[ch]=line
-    ax.legend()
-    canvas.draw()
-
-# Mouse over to display coordinates
-def motion_notify_event(event):
-    min=999999999
-    for ch in range(8):
-        if channel[ch]==0:continue
-        if channel[ch].get_visible() and min>n[ch]: min=n[ch]
-    if(event.xdata==None or event.ydata==None):
-        title2 = "event "+str(evt)+"/"+str(min)+" in run "+run+" (press h for help)" + "     (None,None)"
-        window.wm_title(title2)
-    else:
-        title2 = "event "+str(evt)+"/"+str(min)+" in run "+run+" (press h for help)" + "     ("+str(int(event.xdata))+","+str(round(event.ydata,2))+")"
-        window.wm_title(title2)
-    
 def toggle_ch(event):
     ch=int(event.key)
     if channel[ch]==0: return
     if channel[ch].get_visible(): channel[ch].set_visible(False)
     else: channel[ch].set_visible(True)
-    ax.legend(); canvas.draw()
+    ax.relim(); ax.autoscale_view(); ax.legend(); canvas.draw()
 
 def handle_key_press(event):
     if event.key=="q":
@@ -176,15 +173,6 @@ def handle_key_press(event):
         key_press_handler(event, canvas)
 
 canvas.mpl_connect("key_press_event", handle_key_press)
-fig.canvas.mpl_connect("motion_notify_event", motion_notify_event)
-
-# https://stackoverflow.com/questions/47475783
-def run_cmd(event):
-    print("cmd: "+cmdline.get())
-    if(str.isdigit(cmdline.get())):
-        jump_event(int(cmdline.get()))
-        print("jump to event "+cmdline.get())
-cmdline.bind('<Return>', run_cmd)
 
 # give focus to the GUI window in Mac
 # https://stackoverflow.com/questions/17774859
