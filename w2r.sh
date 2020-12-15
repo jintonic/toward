@@ -28,7 +28,7 @@ if [ ! -f "$input" ]; then echo "$input does not exist!"; exit; fi
 
 # check if WaveDump configuration file "WaveDumpConfig.txt" exists
 cfg="run/$run/WaveDumpConfig.txt"
-if [[ $run -eq 0 ]]; then cfg="run/$run/ch$ch.cfg"; fi
+if [[ $run -eq 0 ]] && [[ $ch -ge 2 ]]; then cfg="run/$run/ch$ch.txt"; fi
 if [ ! -f "$cfg" ]; then echo "$cfg does not exist!"; exit; fi
 
 # fetch model number of digitizer from the configuration file
