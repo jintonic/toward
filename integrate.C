@@ -35,7 +35,6 @@ void integrate(int run=0, int ch=1, int min=0, int max=0,
 			// search for downward zero crossing point
 			max=0;
 			for (int j=tt; j<n; j++) { if (s[j]<0) max=j+back; if (max>0) break; }
-			cout<<tt<<", "<<min<<", "<<max<<endl;
 		}
 		a=0; for (int j=min; j<max; j++) a+=s[j];
 		bint->Fill(); bmin->Fill(); bmax->Fill();
