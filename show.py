@@ -38,23 +38,21 @@ if len(argv)>1: # if run number is specified
 folder="run/"+run+"/"
 print("check ROOT files in "+folder+":")
 import uproot4
-t=[0]*8; n=[0]*8; nfiles=0
+t=[0]*8; n=[0]*8; nfiles=0; minNevt=9999999
 for ch in range(8):
     file=folder+"wave"+str(ch)+".root"
     if path.exists(file):
         t[ch]=uproot4.open(file)['t'].arrays()
         n[ch]=len(t[ch])
         print(file+" contains "+str(n[ch])+" events")
-        if n[ch]>0: nfiles+=1
+        if n[ch]>0:
+            nfiles+=1
+            if minNevt>n[ch]: minNevt=n[ch]
 if nfiles<1: print("no root file in "+folder+", quit"); exit()
-    
-    
+
 # title bar
-for ch in range(8):
-    if n[ch]>0:
-        title="There are "+str(n[ch])+" events in run "+run
-        title+=" (press h for help, q to quit)"
-        break
+title="There are "+str(minNevt)+" events in run "+run
+title+=" (press h for help, q to quit)"
 from tkinter import Tk, Label, Entry, END, TOP, LEFT, BOTH
 window = Tk(); window.wm_title(title)
 
@@ -64,9 +62,7 @@ fig=Figure(); ax=fig.add_subplot()
 evt=0; # draw the first event
 channel=[0]*8
 for ch in range(8):
-    if n[ch]>0:
-        line,=ax.plot(t[ch][b's'][evt], label="channel "+str(ch))
-        channel[ch]=line
+    if n[ch]>0: channel[ch],=ax.plot(t[ch][b's'][evt],label="channel "+str(ch))
 ax.legend()
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -91,20 +87,21 @@ def jump_to_event(event):
     evtSpecified = evtSpecifier.get() # get user specified event number
     if not evtSpecified.isdigit(): return
     # find the minimal total number of events in all 8 channels
-    min=999999999
+    minNevt=999999999
     for ch in range(8):
         if channel[ch]==0:continue # skip empty channel
-        if channel[ch].get_visible() and min>n[ch]: min=n[ch]
+        if channel[ch].get_visible() and minNevt>n[ch]: minNevt=n[ch]
     # set the current event
     global evt;
     if int(evtSpecified) < 0: evt=0
-    elif int(evtSpecified) > min: evt=min-1
+    elif int(evtSpecified) > minNevt: evt=minNevt-1
     else: evt=int(evtSpecified)
     
     # update the title bar
-    title="There are "+str(min)+" events in run "+run
+    title="There are "+str(minNevt)+" events in run "+run
     title+=" (press h for help, q to quit)"
     window.wm_title(title)
+    evtSpecifier.delete(0, END); evtSpecifier.insert(0, str(evt));
 
     # update canvas
     for ch in range(8):
@@ -121,14 +118,14 @@ evtSpecifier.bind('<Escape>', discard_modification)
 runSpecifier.bind('<Escape>', discard_modification)
 
 def show_previous_event():
-    min=999999999
+    minNevt=999999999
     for ch in range(8):
         if channel[ch]==0:continue
-        if channel[ch].get_visible() and min>n[ch]: min=n[ch]
+        if channel[ch].get_visible() and minNevt>n[ch]: minNevt=n[ch]
     global evt; evt-=1
-    if evt==-1: evt=min-1
+    if evt==-1: evt=minNevt-1
     evtSpecifier.delete(0, END); evtSpecifier.insert(0, str(evt));
-    title="There are "+str(min)+" events in run "+run
+    title="There are "+str(minNevt)+" events in run "+run
     title+=" (press h for help, q to quit)"
     window.wm_title(title)
     for ch in range(8):
@@ -137,14 +134,14 @@ def show_previous_event():
     ax.relim(); ax.autoscale_view(); ax.legend(); canvas.draw()
 
 def show_next_event():
-    min=999999999
+    minNevt=999999999
     for ch in range(8):
         if channel[ch]==0:continue
-        if channel[ch].get_visible() and min>n[ch]: min=n[ch]
+        if channel[ch].get_visible() and minNevt>n[ch]: minNevt=n[ch]
     global evt; evt+=1;
-    if evt==min: evt=0
+    if evt==minNevt: evt=0
     evtSpecifier.delete(0, END); evtSpecifier.insert(0, str(evt));
-    title="There are "+str(min)+" events in run "+run
+    title="There are "+str(minNevt)+" events in run "+run
     title+=" (press h for help, q to quit)"
     window.wm_title(title)
     for ch in range(8):
