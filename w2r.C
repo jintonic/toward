@@ -14,15 +14,15 @@
 // - ssize: size of a sample value in byte
 // - bits: resolution of digitizer
 
-void w2r(int run=0, int ch=0, float thr=10, float polarity=1,
-	 	int nbase=100, int ssize=2, int bits=10)
+void w2r(const char* run="2020/11/27/2158", int ch=0, float thr=10,
+	 	float polarity=1, int nbase=100, int ssize=2, int bits=10)
 {
-	ifstream *input = new ifstream(Form("run/%d/wave%d.dat",run,ch), ios::binary);
+	ifstream *input = new ifstream(Form("%s/wave%d.dat",run,ch), ios::binary);
 	input->seekg(0, ios::end); // move getter to the end of file
 	int fsize = input->tellg();// get input file size
 	input->seekg(0, ios::beg); // move getter back to the beginning
 
-	TFile *output = new TFile(Form("run/%d/wave%d.root",run,ch), "recreate");
+	TFile *output = new TFile(Form("%s/wave%d.root",run,ch), "recreate");
 	TTree *tree = new TTree("t", Form("waveforms from channel %d",ch));
 	short adc[99999]= {0}; float s[99999]={0}; // waveform samples
 	int n, len, tmp, cha, evt, ttt, tt, th, tl;
@@ -72,6 +72,6 @@ void w2r(int run=0, int ch=0, float thr=10, float polarity=1,
 	input->close();
 
 	tree->Write("", TObject::kOverwrite);
+	cout<<tree->GetEntries()<<" events saved in "<<output->GetName()<<endl;
 	output->Close();
-	cout<<"File "<<output->GetName()<<" saved"<<endl;
 }
