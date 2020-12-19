@@ -1,4 +1,4 @@
-![ TOWARD - Tools, Objects for Waveform Analysis, Reformatting & Drawing](run/0/logo.png)
+![ TOWARD - Tools, Objects for Waveform Analysis, Reformatting & Drawing](share/assets/logo.png)
 
 [Python][] and [ROOT][] scripts for the process of digital waveforms taken with a [CAEN][] [digitizer][] and its [WaveDump][] readout program.
 
@@ -9,8 +9,8 @@
 [digitizer]:https://www.caen.it/sections/digitizer-families/
 [WaveDump]:https://www.caen.it/products/caen-wavedump/
 
-[![Data structure](https://img.shields.io/badge/data-structure-blue?style=flat)](run)
-[![Examples](https://img.shields.io/badge/example-data-red?style=flat)](run/0)
+[![Getting started](https://img.shields.io/badge/getting-started-blue?style=flat)](#getting-started)
+[![WaveDump config](https://img.shields.io/badge/Wave-Dump-red?style=flat)](#wavedump-configurations)
 
 ## Prerequisites
 
