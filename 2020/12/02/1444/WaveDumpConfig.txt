@@ -1,4 +1,6 @@
-# Digitizer: 720
+@OFF
+Digitizer 720
+@ON
 
 [COMMON]
 OPEN USB 0 0 0
