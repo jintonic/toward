@@ -1,13 +1,11 @@
-# WaveDump configuration file
-
-# The following setting is for TOWARD/w2r.sh. WaveDump does not understand it.
-# Please leave the line commented out, but do change the digitizer name to
-# yours. Options: 720, 721, 724, 725, 730, 731, 740, 742, 743, 751 761
-#
-# Digitizer: 751
-
 # Lines between commands @OFF and @ON will be skipped.
-# This can be used to exclude parts of the file.
+# This can be used to exclude parts of the file or
+# inset configuraitons that WaveDump does not understand.
+# The following setting is for TOWARD/w2r.C
+# Options: 720, 721, 724, 725, 730, 731, 740, 742, 743, 751 761
+@OFF
+Digitizer 751
+@ON
 
 # Settings common to all channels
 [COMMON]
