@@ -1,23 +1,20 @@
 #!/usr/bin/env python
-
 usage='''
-Convert binary output file from DAQ to ROOT files:
+Convert WaveDump binary output file from DAQ to ROOT files:
 python3 w2r.py
 '''
-
-# main window
 from tkinter import *
-root=Tk(); root.wm_title('Convert WaveDump binary output to ROOT format')
-def quit_gui(event=None):
-    root.quit()    # stop the main loop
-    root.destroy() # necessary on Windows to prevent fatal error
+root=Tk(); root.wm_title('Convert WaveDump binary output to ROOT files')
+def quit_gui(event=None): root.quit(); root.destroy()
 root.bind('q', quit_gui)
 
-# run
 Label(root, text="Select run folder:").grid(column=0, row=0, sticky='nw')
+rlist=Listbox(root, height=8,
+# https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/listbox.html
+        selectbackground='orchid', selectforeground='white',
 # https://stackoverflow.com/a/48992537/1801749
-rlist=Listbox(root, height=8, selectbackground='orchid', exportselection=False)
-rlist.grid(column=0, row=1)
+        exportselection=False)
+rlist.grid(column=0, row=1); rlist.focus()
 
 from os import walk, system, path
 for folder, subdirs, files in walk('.'):
@@ -29,35 +26,36 @@ for folder, subdirs, files in walk('.'):
 rlist.selection_set(rlist.size()-1) # select the last run
 rlist.see(rlist.size()-1) # scroll to the last run
 
-# channel
 Label(root, text="Select channel file:").grid(column=1, row=0, sticky='nw')
-clist=Listbox(root, height=8, selectbackground='orchid', exportselection=False)
+clist=Listbox(root,height=8,exportselection=False,
+        selectbackground='orchid',selectforeground='white')
 clist.grid(column=1,row=1)
 
-# ROOT files
 Label(root, text="Existing ROOT files:").grid(column=2, row=0, sticky='nw')
 flist=Listbox(root, height=8)
 flist.grid(column=2,row=1)
 
-def show_file(event=None):
+def call_show_py(event=None):
     if rlist.size()==0 or flist.size()==0: return
-    response=system("python show.py "+rlist.get(rlist.curselection())+"&")
-show=Button(root, text='Show', command=show_file)
-show.grid(column=2,row=2,sticky='se');
+    system("python show.py "+rlist.get(rlist.curselection()[0])+"&")
+show=Button(root, text='Show', command=call_show_py)
+show.grid(column=2,row=2,sticky='se')
+show.bind('<Return>', call_show_py)
 
 Label(root, text="WaveDumpConfig.txt:").grid(column=0, row=2, sticky='sw')
-text=Text(root, width=70, height=20);
+text=Text(root, width=70, height=20)
 text.grid(column=0, row=3, columnspan=3)
 
 def run_selected(event=None):
-    clist.delete(0,'end'); flist['state']='normal'; flist.delete(0,'end')
-    run=rlist.get(rlist.curselection())
+    clist.delete(0,'end')
+    flist['state']='normal'; flist.delete(0,'end')
+    text['state']='normal'; text.delete(1.0,'end')
 
-    text['state']='normal'; text.delete('1.0','end')
-    f=rlist.get(rlist.curselection()[0])+'/WaveDumpConfig.txt'
+    # parse configuraiton file
     global thr, polarity, nbase, ssize, bits
     thr,polarity,nbase,ssize,bits=10,1,100,2,14
-    with open(f,'r') as cfg:
+    run=rlist.get(rlist.curselection()[0])
+    with open(run+'/WaveDumpConfig.txt','r') as cfg:
         for line in cfg:
             if line=='': continue
             if line[0]=='#': continue
@@ -70,41 +68,42 @@ def run_selected(event=None):
             if part[0]=='Digitizer':
                 if part[1]>'750': bits=10
                 elif part[1]>='740': bits=12
-                elif part[1]=='720': bints=12
+                elif part[1]=='720': bits=12
                 else:
                     if part[1]=='721' or part[1]=='731': byte=1
             text.insert(INSERT,line)
     text['state']='disabled'
 
+    # list binary and root files
     for ch in range(8):
         if path.exists(run+'/wave'+str(ch)+'.root'):
             flist.insert("end",'wave'+str(ch)+'.root')
-            if flist.size()%2: flist.itemconfig("end", bg='azure')
         if path.exists(run+'/wave'+str(ch)+'.dat'):
             clist.insert("end",'wave'+str(ch)+'.dat')
             if clist.size()%2: clist.itemconfig("end", bg='azure')
     clist.selection_set(0)
-    if flist.size()>0: show['state']='normal'
-    else: show['state']='disabled'
+    show['state']='normal' if flist.size()>0 else 'disabled'
     flist['state']='disabled'
-run_selected()
 rlist.bind("<<ListboxSelect>>", run_selected)
+run_selected()
 
-# button
 def convert_file(event=None):
-    run=rlist.get(rlist.curselection()[0])
-    ch=clist.curselection()[0]
-    cmd="""root -b -q w2r.C'("{}",{},{},{},{},{},{})'"""
-    cmd.format(run,ch,thr,polarity,nbase,ssize,bits)
+    run=rlist.get(rlist.curselection()[0]); ch=clist.curselection()[0]
+    cmd="""root -b -q w2r.C'("{}",{},{},{},{},{},{})'""".format(
+            run,ch,thr,polarity,nbase,ssize,bits)
     system(cmd)
-    run_selected()
+    flist['state']='normal'; flist.delete(0,'end')
+    for ch in range(8):
+        if path.exists(run+'/wave'+str(ch)+'.root'):
+            flist.insert("end",'wave'+str(ch)+'.root')
+    show['state']='normal' if flist.size()>0 else 'disabled'
+    flist['state']='disabled'
 convert=Button(root, text='Convert', command=convert_file)
-convert.grid(column=1,row=2,sticky='se');
+convert.grid(column=1,row=2,sticky='se')
 convert.bind('<Return>', convert_file)
 
 # give focus to the GUI window in Mac
 # https://stackoverflow.com/questions/17774859
-from os import system
 from platform import system as platform
 if platform() == 'Darwin':  # How Mac OS X is identified by Python
     system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
