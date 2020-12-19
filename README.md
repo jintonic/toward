@@ -147,7 +147,7 @@ augroup END
 
 A [WaveDump][] configuration file may look like the following in vim with [syntax highlighting][1] enabled:
 
-![wavedump config file syntax highlighting in vim](share/assets/vim.png)
+![wavedump config file syntax highlighting in vim](share/vim/syntax/vim.png)
 
 [1]:https://en.wikipedia.org/wiki/Syntax_highlighting
 [vim]:https://www.vim.org/
