@@ -1,4 +1,6 @@
-# Digitizer: 751
+@OFF
+Digitizer 751
+@ON
 
 [COMMON]
 OPEN PCI 0 0 0
