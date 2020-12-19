@@ -14,141 +14,93 @@ from sys import argv
 if len(argv)<2: print(usage); exit()
 folder=argv[1]
 
-# check root files
-from os import scandir, path
 print("check ROOT files in "+folder+":")
-import uproot4
-t=[0]*8; n=[0]*8; nfiles=0; minNevt=9999999
+from os import path
+import uproot
+t=[0]*8; n=[0]*8; nfile=0; nevt=0
 for ch in range(8):
     f=folder+"/wave"+str(ch)+".root"
     if path.exists(f):
-        t[ch]=uproot4.open(f)['t'].arrays()
+        t[ch]=uproot.open(f)['t'].arrays()
         n[ch]=len(t[ch])
         print(f+" contains "+str(n[ch])+" events")
-        if n[ch]>0:
-            nfiles+=1
-            if minNevt>n[ch]: minNevt=n[ch]
-if nfiles<1: print("no root file in "+folder+", quit"); exit()
+        if n[ch]>0: nfile+=1
+        if nevt<n[ch]: nevt=n[ch]
+if nfile<1: print("no valid root file in "+folder+", quit"); exit()
 
-# title bar
-title="There are "+str(minNevt)+" events in total"
+title="There are "+str(nevt)+" events in run folder "+folder
 title+=" (press h for help, q to quit)"
 from tkinter import Tk, Label, Entry, END, TOP, LEFT, BOTH
-window = Tk(); window.wm_title(title)
+root = Tk(); root.wm_title(title)
 
 # canvas
 from matplotlib.figure import Figure
 fig=Figure(); ax=fig.add_subplot()
-evt=0; # draw the first event
-channel=[0]*8
+line=[0]*8
 for ch in range(8):
-    if n[ch]>0: channel[ch],=ax.plot(t[ch][b's'][evt],label="channel "+str(ch))
+    if n[ch]>0: line[ch],=ax.plot(t[ch][b's'][0],label="channel "+str(ch))
 ax.legend()
-
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-canvas = FigureCanvasTkAgg(fig, master=window); canvas.draw()
+canvas = FigureCanvasTkAgg(fig, master=root); canvas.draw()
 canvas.get_tk_widget().pack(side=TOP, fill=BOTH, expand=1)
 
 # tool bar
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
-toolbar=NavigationToolbar2Tk(canvas, window)
+toolbar=NavigationToolbar2Tk(canvas, root)
 
 Label(toolbar, text="Event:").pack(side=LEFT)
 evtSpecifier=Entry(toolbar, width=8)
-evtSpecifier.insert(0, str(evt))
+evtSpecifier.insert(0, '0')
 evtSpecifier.pack(side=LEFT)
-Label(toolbar, text="Run:").pack(side=LEFT)
-runSpecifier=Entry(toolbar, width=15)
-runSpecifier.insert(0, folder)
-runSpecifier.pack(side=LEFT)
-
-# functions and associated key bindings
-def jump_to_event(event):
-    evtSpecified = evtSpecifier.get() # get user specified event number
-    if not evtSpecified.isdigit(): return
-    # find the minimal total number of events in all 8 channels
-    minNevt=999999999
-    for ch in range(8):
-        if channel[ch]==0:continue # skip empty channel
-        if channel[ch].get_visible() and minNevt>n[ch]: minNevt=n[ch]
-    # set the current event
-    global evt;
-    if int(evtSpecified) < 0: evt=0
-    elif int(evtSpecified) > minNevt: evt=minNevt-1
-    else: evt=int(evtSpecified)
-    
-    # update the title bar
-    title="There are "+str(minNevt)+" events in total "
-    title+=" (press h for help, q to quit)"
-    window.wm_title(title)
-    evtSpecifier.delete(0, END); evtSpecifier.insert(0, str(evt));
-
-    # update canvas
-    for ch in range(8):
-        if channel[ch]==0:continue
-        if channel[ch].get_visible(): channel[ch].set_ydata(t[ch][b's'][evt])
-    ax.relim(); ax.autoscale_view(); ax.legend(); canvas.draw()
-
 # https://stackoverflow.com/a/42194708/1801749
 def discard_modification(event): canvas.get_tk_widget().focus_force()
+evtSpecifier.bind('<Escape>', discard_modification)
 
+# functions and associated key bindings
+def jump_to_event(event=None):
+    evt = evtSpecifier.get()
+    if not evt.isdigit(): return
+    if int(evt) < 0: evt='0'
+    if int(evt) > nevt: evt=str(nevt-1)
+    evtSpecifier.delete(0, END); evtSpecifier.insert(0, evt);
+    # update canvas
+    for ch in range(8):
+        if line[ch]==0:continue
+        if line[ch].get_visible(): line[ch].set_ydata(t[ch][b's'][int(evt)])
+    ax.relim(); ax.autoscale_view(); ax.legend(); canvas.draw()
 # https://stackoverflow.com/questions/47475783
 evtSpecifier.bind('<Return>', jump_to_event)
-evtSpecifier.bind('<Escape>', discard_modification)
-runSpecifier.bind('<Escape>', discard_modification)
 
 def show_previous_event():
-    minNevt=999999999
-    for ch in range(8):
-        if channel[ch]==0:continue
-        if channel[ch].get_visible() and minNevt>n[ch]: minNevt=n[ch]
-    global evt; evt-=1
-    if evt==-1: evt=minNevt-1
-    evtSpecifier.delete(0, END); evtSpecifier.insert(0, str(evt));
-    title="There are "+str(minNevt)+" events in total"
-    title+=" (press h for help, q to quit)"
-    window.wm_title(title)
-    for ch in range(8):
-        if channel[ch]==0:continue
-        if channel[ch].get_visible(): channel[ch].set_ydata(t[ch][b's'][evt])
-    ax.relim(); ax.autoscale_view(); ax.legend(); canvas.draw()
+    evt = evtSpecifier.get()
+    if not evt.isdigit(): return
+    evt = str(int(evt)-1)
+    evtSpecifier.delete(0, END); evtSpecifier.insert(0, evt);
+    jump_to_event()
 
 def show_next_event():
-    minNevt=999999999
-    for ch in range(8):
-        if channel[ch]==0:continue
-        if channel[ch].get_visible() and minNevt>n[ch]: minNevt=n[ch]
-    global evt; evt+=1;
-    if evt==minNevt: evt=0
-    evtSpecifier.delete(0, END); evtSpecifier.insert(0, str(evt));
-    title="There are "+str(minNevt)+" events in total"
-    title+=" (press h for help, q to quit)"
-    window.wm_title(title)
-    for ch in range(8):
-        if channel[ch]==0:continue
-        if channel[ch].get_visible(): channel[ch].set_ydata(t[ch][b's'][evt])
-    ax.relim(); ax.autoscale_view(); ax.legend(); canvas.draw()
+    evt = evtSpecifier.get()
+    if not evt.isdigit(): return
+    evt = str(int(evt)+1)
+    evtSpecifier.delete(0, END); evtSpecifier.insert(0, evt);
+    jump_to_event()
 
 def toggle_ch(event):
     ch=int(event.key)
-    if channel[ch]==0: return
-    if channel[ch].get_visible(): channel[ch].set_visible(False)
-    else: channel[ch].set_visible(True)
-    ax.relim(); ax.autoscale_view(); ax.legend(); canvas.draw()
+    if ch>7 or ch<0: return
+    if line[ch]==0: return
+    if line[ch].get_visible(): line[ch].set_visible(False)
+    else: line[ch].set_visible(True)
+    ax.legend(); canvas.draw()
 
+from matplotlib.backend_bases import key_press_handler
 def handle_key_press(event):
-    if event.key=="q":
-        window.quit()    # stop the main loop
-        window.destroy() # necessary on Windows to prevent fatal error
+    if event.key=="q": root.quit(); root.destroy()
     elif event.key.isdigit(): toggle_ch(event)
     elif event.key=="h": print(hotkeys)
     elif event.key==" ": show_next_event()
     elif event.key=="b": show_previous_event()
-    else:
-        # handle default matplotlib key bindings
-        from matplotlib.backend_bases import key_press_handler
-        key_press_handler(event, canvas)
-
+    else: key_press_handler(event, canvas) # handle default matplotlib hotkeys
 canvas.mpl_connect("key_press_event", handle_key_press)
 
 # give focus to the GUI window in Mac
@@ -158,6 +110,6 @@ from platform import system as platform
 if platform() == 'Darwin':  # How Mac OS X is identified by Python
     system('''/usr/bin/osascript -e 'tell app "Finder" to set frontmost of process "Python" to true' ''')
 
-# If you put window.destroy() here, it will cause an error if the window is
+# If you put root.destroy() here, it will cause an error if the window is
 # closed with the window manager.
-window.mainloop()
+root.mainloop()
