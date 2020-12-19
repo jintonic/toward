@@ -6,7 +6,7 @@
 // - saturation status saved
 //
 // Arguments:
-// - run: run number
+// - run: run folder
 // - ch: channel number
 // - thr: threshold in ADC unit
 // - polarity: polarity of triggered pulse (1: positive, -1: negative)
