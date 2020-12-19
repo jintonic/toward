@@ -1,16 +1,5 @@
 #!/usr/bin/env python
-
-usage='''
-Show waveforms in run/number/wave[0-7].root:
-python3 show.py <number>
-
-where <number> should be a non-negative integer, e.g. 123
-wave[0-7].root will then be searched in folder run/123/
-
-If no <number> is specified, all sub-directories in run/ 
-will be checked if they are named as non-negative integers.
-wave[0-7].root will then be searched in run/<biggest integer>
-'''
+usage='python show.py yyyy/mm/dd/HHMM'
 
 hotkeys='''
    --- List of key bindings ---
@@ -20,38 +9,29 @@ b:          previous event
 q:          quit
 '''
 
-# get the largest run in run/*/
-runs=[]
-from os import scandir, path
-with scandir('run') as dirs:
-    for folder in dirs:
-        if folder.name.isdigit(): runs.append(folder.name)
-runs.sort(); run=runs[-1]
-
-# get run number
+# get run folder
 from sys import argv
-if len(argv)>1: # if run number is specified
-    if argv[1] in runs: run=argv[1]
-    else: print("no run/"+argv[1]+"/, quit"); exit()
+if len(argv)<2: print(usage); exit()
+folder=argv[1]
 
 # check root files
-folder="run/"+run+"/"
+from os import scandir, path
 print("check ROOT files in "+folder+":")
 import uproot4
 t=[0]*8; n=[0]*8; nfiles=0; minNevt=9999999
 for ch in range(8):
-    file=folder+"wave"+str(ch)+".root"
-    if path.exists(file):
-        t[ch]=uproot4.open(file)['t'].arrays()
+    f=folder+"/wave"+str(ch)+".root"
+    if path.exists(f):
+        t[ch]=uproot4.open(f)['t'].arrays()
         n[ch]=len(t[ch])
-        print(file+" contains "+str(n[ch])+" events")
+        print(f+" contains "+str(n[ch])+" events")
         if n[ch]>0:
             nfiles+=1
             if minNevt>n[ch]: minNevt=n[ch]
 if nfiles<1: print("no root file in "+folder+", quit"); exit()
 
 # title bar
-title="There are "+str(minNevt)+" events in run "+run
+title="There are "+str(minNevt)+" events in total"
 title+=" (press h for help, q to quit)"
 from tkinter import Tk, Label, Entry, END, TOP, LEFT, BOTH
 window = Tk(); window.wm_title(title)
@@ -78,8 +58,8 @@ evtSpecifier=Entry(toolbar, width=8)
 evtSpecifier.insert(0, str(evt))
 evtSpecifier.pack(side=LEFT)
 Label(toolbar, text="Run:").pack(side=LEFT)
-runSpecifier=Entry(toolbar, width=3)
-runSpecifier.insert(0, run)
+runSpecifier=Entry(toolbar, width=15)
+runSpecifier.insert(0, folder)
 runSpecifier.pack(side=LEFT)
 
 # functions and associated key bindings
@@ -98,7 +78,7 @@ def jump_to_event(event):
     else: evt=int(evtSpecified)
     
     # update the title bar
-    title="There are "+str(minNevt)+" events in run "+run
+    title="There are "+str(minNevt)+" events in total "
     title+=" (press h for help, q to quit)"
     window.wm_title(title)
     evtSpecifier.delete(0, END); evtSpecifier.insert(0, str(evt));
@@ -125,7 +105,7 @@ def show_previous_event():
     global evt; evt-=1
     if evt==-1: evt=minNevt-1
     evtSpecifier.delete(0, END); evtSpecifier.insert(0, str(evt));
-    title="There are "+str(minNevt)+" events in run "+run
+    title="There are "+str(minNevt)+" events in total"
     title+=" (press h for help, q to quit)"
     window.wm_title(title)
     for ch in range(8):
@@ -141,7 +121,7 @@ def show_next_event():
     global evt; evt+=1;
     if evt==minNevt: evt=0
     evtSpecifier.delete(0, END); evtSpecifier.insert(0, str(evt));
-    title="There are "+str(minNevt)+" events in run "+run
+    title="There are "+str(minNevt)+" events in total"
     title+=" (press h for help, q to quit)"
     window.wm_title(title)
     for ch in range(8):
