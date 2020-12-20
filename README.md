@@ -35,7 +35,13 @@ $ pip install matplotlib
 
 ### Exploring example data
 
-A few example [WaveDump][] output files named as `wave0.dat` are included in the folder [2020](2020) to demonstrate the usage of the processing scripts. To explore them, please
+A few example [WaveDump][] output files named as `wave0.dat`, etc., are included in the folder [2020](2020) to demonstrate the usage of the processing scripts:
+
+- [2020/02140956](2020/02140956) contains coincidently triggered waveforms from two SiPMs sandwiching a BGO crystal taken with a [DT5751][] digitizer
+- [2020/06272158](2020/06272158) contains waveforms from a Hamamatsu SiPM module taken with a [DT5751][] digitizer
+- [2020/12021523](2020/12021523) contains waveforms from a HPGe detector taken with a [DT5720][] digitizer
+
+To explore them, please
 
 1. download the package from <https://github.com/jintonic/toward.git>
 2. get to the `toward` directory, double click [w2r.py](w2r.py) to convert `wave?.dat` to `wave?.root`. The script can also be run in a terminal as `python3 w2r.py` or simply `./w2r.py`. Note that in [Git Bash][] or [MobaXterm][], the command has to be changed to `winpty python w2r.py` to enable [running Python installed in Windows in a Linux-like terminal](https://stackoverflow.com/questions/48199794/winpty-and-git-bash)
@@ -47,8 +53,8 @@ A few example [WaveDump][] output files named as `wave0.dat` are included in the
 
 ### Analyzing new data
 
-1. create a new run data folder named `yyyy/mm/dd/HHMM/` in your local copy of `toward`
-2. get into the just created folder and create a [WaveDump][] configuration file there named [WaveDumpConfig.txt](2020/12/16/2225/WaveDumpConfig.txt)
+1. create a new run data folder named `yyyy/mmddHHMM/` (please used 24-hour format for time) in your local copy of `toward`.
+2. get into the just created folder and create a [WaveDump][] configuration file there named [WaveDumpConfig.txt](2020/02140956/WaveDumpConfig.txt)
 3. run `wavedump WaveDumpConfig.txt` there to create binary output file `wave?.dat`, where `?` is the channel number. Note that in Window, you may have to run [WaveDump][] from its installation folder, its configuration file and output files need to be copied or moved from there to the newly created folder. In order for [w2r.py](w2r.py) to process the configuration file properly, please don't name it other than `WaveDumpConfig.txt`. Settings that can be tuned in the configuration file can be found in the WaveDump [manual][].
 4. follow the previous section starting from step 2.
 
@@ -84,20 +90,14 @@ shows 5 non-saturated (`is==0`) waveforms (`s`: individual waveform samples, [It
 
 ## Data structure
 
-The way to organize digital waveform data depends on analysis tools and ecosystem to be used. A [class][] named `Waveform` or `Waveforms` may not be the best choice. Generally speaking, data structures are the way we organize information on our computer; it should involve things more than just [data members][] of a [class][]. For example, a well designed directory structure and output file naming scheme may simplify the coding significantly. They should be considered as a part of data structure.
+The way to organize digital waveform data depends on analysis tools and ecosystem to be used. A [class][] named `Waveform` or `Waveforms` may not be the best choice. Generally speaking, data structures are the way we organize information on our computer; it should involve things more than just [data members][] of a [class][]. For example, a well designed directory structure and output file naming scheme may simplify the coding significantly. They should be considered as a part of data structure. [WaveDump][] saves waveforms from each channel separately, for example, `wave0.dat` is from channel 0. In [TOWARD][], they are organized in folders named as `yyyy/mmddHHMM/`. You can increase the level of subfolders, for example, `yyyy/mm/dd/HHMM/`. As long as there is a [WaveDump][] configuration file `WaveDumpConfig.txt` saved in it, it will be recognized as a data directory.
 
 [class]:https://en.wikipedia.org/wiki/Class_(computer_programming)
 [data members]:http://www.cplusplus.com/doc/tutorial/classes/
 
-[WaveDump][] saves waveforms from each channel separately, for example, `wave0.dat` is from channel 0. They are organized in folders named as `yyyy/mm/dd/HHMM/`. [2020](2020) contains example data. They serve as test input of the processing scripts. One can use them to experience the power of TOWARD without physically owning a [CAEN][] [digitizer][].
-
-- [2020/12/02/1444](2020/12/02/1444) contains waveforms from a HPGe detector taken with a [DT5720B][] digitizer
-- [2020/11/27/2158](2020/11/27/2158) contains waveforms from a Hamamatsu SiPM module taken with a [DT5751][] digitizer
-- [2020/12/16/2225](2020/12/16/2225) contains coincidently triggered waveforms from two SiPMs sandwiching a BGO crystal taken with a [DT5751][] digitizer
-
 ## WaveDump configurations
 
-- [2020/12/16/2225/WaveDumpConfig.txt](2020/12/16/2225/WaveDumpConfig.txt) can be used as an example [WaveDump][] configuration file that can be copied to other folders as a starting point for customization. It also demonstrates how to set up coincident trigger among channels
+- [2020/02140956/WaveDumpConfig.txt](2020/02140956/WaveDumpConfig.txt) can be used as an example [WaveDump][] configuration file that can be copied to other folders as a starting point for customization. It also demonstrates how to set up coincident trigger among channels
 
 ### Output file settings
 
@@ -152,4 +152,5 @@ A [WaveDump][] configuration file may look like the following in vim with [synta
 [1]:https://en.wikipedia.org/wiki/Syntax_highlighting
 [vim]:https://www.vim.org/
 [DT5751]:https://www.caen.it/products/dt5751/
+[DT5720]:https://www.caen.it/products/dt5720/
 [manual]:https://usermanual.wiki/Document/UM2091WaveDumpUserManualrev13.87092449/view
