@@ -42,8 +42,15 @@ show=Button(root, text='Show', command=call_show_py)
 show.grid(column=2,row=2,sticky='se')
 show.bind('<Return>', call_show_py)
 
+def call_analyze_C(event=None):
+    if rlist.size()==0 or flist.size()==0: return
+    system("root analyze.C'(\""+rlist.get(rlist.curselection()[0])+"\")'")
+ana=Button(root, text='Analyze', command=call_analyze_C)
+ana.grid(column=2,row=2,sticky='sw')
+ana.bind('<Return>', call_analyze_C)
+
 Label(root, text="WaveDumpConfig.txt:").grid(column=0, row=2, sticky='sw')
-text=Text(root, width=70, height=20)
+text=Text(root, width=70, height=25)
 text.grid(column=0, row=3, columnspan=3)
 
 def run_selected(event=None):
@@ -83,6 +90,7 @@ def run_selected(event=None):
             if clist.size()%2: clist.itemconfig("end", bg='azure')
     clist.selection_set(0)
     show['state']='normal' if flist.size()>0 else 'disabled'
+    ana['state']='normal' if flist.size()>0 else 'disabled'
     flist['state']='disabled'
 rlist.bind("<<ListboxSelect>>", run_selected)
 run_selected()
@@ -97,6 +105,7 @@ def convert_file(event=None):
         if path.exists(run+'/wave'+str(ch)+'.root'):
             flist.insert("end",'wave'+str(ch)+'.root')
     show['state']='normal' if flist.size()>0 else 'disabled'
+    ana['state']='normal' if flist.size()>0 else 'disabled'
     flist['state']='disabled'
 convert=Button(root, text='Convert', command=convert_file)
 convert.grid(column=1,row=2,sticky='se')
