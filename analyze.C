@@ -1,6 +1,7 @@
 void analyze(const char* run_folder="2020/02140956")
 {
 	TTreeViewer *viewer = new TTreeViewer;
+	viewer->SetScanRedirect(kTRUE); // avoid involving terminal output
 
 	TFile *f; TTree *t;
 	for (int ch=0; ch<8; ch++) {
