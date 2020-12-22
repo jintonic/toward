@@ -37,14 +37,14 @@ flist.grid(column=2,row=1)
 
 def call_show_py(event=None):
     if rlist.size()==0 or flist.size()==0: return
-    system("python show.py "+rlist.get(rlist.curselection()[0])+"&")
+    system("python3 show.py "+rlist.get(rlist.curselection()[0])+"&")
 show=Button(root, text='Show', command=call_show_py)
 show.grid(column=2,row=2,sticky='se')
 show.bind('<Return>', call_show_py)
 
 def call_analyze_C(event=None):
     if rlist.size()==0 or flist.size()==0: return
-    system("root analyze.C'(\""+rlist.get(rlist.curselection()[0])+"\")'")
+    system("root -l analyze.C'(\""+rlist.get(rlist.curselection()[0])+"\")'")
 ana=Button(root, text='Analyze', command=call_analyze_C)
 ana.grid(column=2,row=2,sticky='sw')
 ana.bind('<Return>', call_analyze_C)
