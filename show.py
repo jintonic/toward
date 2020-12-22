@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 usage='python show.py yyyy/mm/dd/HHMM'
 
 hotkeys='''

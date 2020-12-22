@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 usage='''
 Convert WaveDump binary output file from DAQ to ROOT files:
 python3 w2r.py
