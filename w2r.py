@@ -40,7 +40,7 @@ from subprocess import Popen
 def call_show_py(event=None):
     if rlist.size()==0 or flist.size()==0: return
     run=rlist.get(rlist.curselection()[0]).replace('\\','/')
-    Popen(['python', 'show.py', run])
+    Popen(['python3', 'show.py', run])
 show=Button(root, text='Show', command=call_show_py)
 show.grid(column=2, row=2, sticky='se')
 show.bind('<Return>', call_show_py)
@@ -50,7 +50,7 @@ def call_analyze_C(event=None):
     a='analyze.C("'+rlist.get(rlist.curselection()[0]).replace('\\','/')+'")'
     Popen(['root', '-l', a])
 ana=Button(root, text='Analyze', command=call_analyze_C)
-ana.grid(column=2, row=2)
+ana.grid(column=2, row=2, sticky="sw")
 ana.bind('<Return>', call_analyze_C)
 
 Label(root, text="WaveDumpConfig.txt:").grid(column=0, row=2, sticky='sw')
