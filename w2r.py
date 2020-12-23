@@ -4,7 +4,8 @@ Convert WaveDump binary output file from DAQ to ROOT files:
 python3 w2r.py
 '''
 from tkinter import *
-root=Tk(); root.wm_title('Convert WaveDump binary output to ROOT files')
+root=Tk(); root.resizable(0,0)
+root.wm_title('Convert WaveDump binary output to ROOT files')
 def quit_gui(event=None): root.quit(); root.destroy()
 root.bind('q', quit_gui)
 
@@ -14,7 +15,7 @@ rlist=Listbox(root, height=8,
         selectbackground='orchid', selectforeground='white',
 # https://stackoverflow.com/a/48992537/1801749
         exportselection=False)
-rlist.grid(column=0, row=1); rlist.focus()
+rlist.grid(column=0, row=1, sticky='ew'); rlist.focus()
 
 from os import walk, system, path
 for folder, subdirs, files in walk('.'):
@@ -29,28 +30,31 @@ rlist.see(rlist.size()-1) # scroll to the last run
 Label(root, text="Select channel file:").grid(column=1, row=0, sticky='nw')
 clist=Listbox(root,height=8,exportselection=False,
         selectbackground='orchid',selectforeground='white')
-clist.grid(column=1,row=1)
+clist.grid(column=1, row=1, sticky='ew')
 
 Label(root, text="Existing ROOT files:").grid(column=2, row=0, sticky='nw')
 flist=Listbox(root, height=8)
-flist.grid(column=2,row=1)
+flist.grid(column=2, row=1, sticky='ew')
 
+from subprocess import Popen
 def call_show_py(event=None):
     if rlist.size()==0 or flist.size()==0: return
-    system("python3 show.py "+rlist.get(rlist.curselection()[0])+"&")
+    run=rlist.get(rlist.curselection()[0]).replace('\\','/')
+    Popen(['python', 'show.py', run])
 show=Button(root, text='Show', command=call_show_py)
-show.grid(column=2,row=2,sticky='se')
+show.grid(column=2, row=2, sticky='se')
 show.bind('<Return>', call_show_py)
 
 def call_analyze_C(event=None):
     if rlist.size()==0 or flist.size()==0: return
-    system("root -l analyze.C'(\""+rlist.get(rlist.curselection()[0])+"\")'")
+    a='analyze.C("'+rlist.get(rlist.curselection()[0]).replace('\\','/')+'")'
+    Popen(['root', '-l', a])
 ana=Button(root, text='Analyze', command=call_analyze_C)
-ana.grid(column=2,row=2,sticky='sw')
+ana.grid(column=2, row=2)
 ana.bind('<Return>', call_analyze_C)
 
 Label(root, text="WaveDumpConfig.txt:").grid(column=0, row=2, sticky='sw')
-text=Text(root, width=70, height=25)
+text=Text(root, width=65, height=25)
 text.grid(column=0, row=3, columnspan=3)
 
 def run_selected(event=None):
@@ -96,10 +100,11 @@ rlist.bind("<<ListboxSelect>>", run_selected)
 run_selected()
 
 def convert_file(event=None):
-    run=rlist.get(rlist.curselection()[0]); ch=clist.curselection()[0]
-    cmd="""root -b -q w2r.C'("{}",{},{},{},{},{},{})'""".format(
+    run=rlist.get(rlist.curselection()[0]).replace("\\","/");
+    ch=clist.curselection()[0]
+    script='w2r.C("{}",{},{},{},{},{},{})'.format(
             run,ch,thr,polarity,nbase,ssize,bits)
-    system(cmd)
+    Popen(['root', '-b', '-q', script])
     flist['state']='normal'; flist.delete(0,'end')
     for ch in range(8):
         if path.exists(run+'/wave'+str(ch)+'.root'):
