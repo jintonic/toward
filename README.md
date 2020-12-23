@@ -1,4 +1,4 @@
-![ TOWARD - Tools, Objects for Waveform Analysis, Reformatting & Drawing](share/assets/logo.png)
+<img src="share/assets/logo.png" alt="TOWARD - Tools, Objects for Waveform Analysis, Reformatting & Drawing" width="40%" align="right">
 
 [Python][] and [ROOT][] scripts for the process of digital waveforms taken with a [CAEN][] [digitizer][] and its [WaveDump][] readout program.
 
