@@ -14,7 +14,7 @@
 // - ssize: size of a sample value in byte
 // - bits: resolution of digitizer
 
-void w2r(const char* run="2020/11/27/2158", int ch=0, float thr=10,
+void w2r(const char* run="2020/02140956/", int ch=0, float thr=10,
 	 	float polarity=1, int nbase=100, int ssize=2, int bits=10)
 {
 	ifstream *input = new ifstream(Form("%s/wave%d.dat",run,ch), ios::binary);
