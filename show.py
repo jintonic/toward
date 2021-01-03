@@ -150,25 +150,35 @@ def show_next_event():
     ax.relim(); ax.autoscale_view(); ax.legend(); canvas.draw()
     
 from scipy.signal import savgol_filter
+counter = 0
 def five_point_filter():
     global evt
     global filter1
-
-    filter1 = [0]*8
-    for ch in range(8):
-        if n[ch]>0: 
-            y_filter = savgol_filter(t[ch][b's'][evt], 5, 1, mode= 'nearest')
-            filter1[ch], =ax.plot(y_filter,label="filter "+str(ch))
-    ax.legend()
-    canvas.draw()
+    global counter
+    if counter==0:
+        filter1 = [0]*8
+        for ch in range(8):
+            if n[ch]>0: 
+                y_filter = savgol_filter(t[ch][b's'][evt], 5, 1, mode= 'nearest')
+                filter1[ch], =ax.plot(y_filter,label="filter "+str(ch))
+        ax.legend()
+        canvas.draw()
+        counter = counter +1
+    else:
+        return
 
 def remove_filter():
     global filter1
-    for ch in range(8):
-        if n[ch]>0: 
-            filter1[ch].remove()
-    ax.legend()
-    canvas.draw()
+    global counter
+    if counter==1:
+        for ch in range(8):
+            if n[ch]>0: 
+                filter1[ch].remove()
+        ax.legend()
+        canvas.draw()
+        counter = counter-1
+    else:
+        return
 
 def toggle_ch(event):
     ch=int(event.key)
