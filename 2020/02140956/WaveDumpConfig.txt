@@ -97,6 +97,9 @@ WRITE_REGISTER 810C 1100003 FFFFFFF
 ENABLE_INPUT NO
 
 # BASELINE_LEVEL: baseline position in percent of the Full Scale. 
+# Please use DC_OFFSET instead in case of many small pulses, 
+# which will make the calculated baseline higher than the actually DC offset.
+# BASELINE_LEVEL and DC_OFFSET cannot be used at the same time.
 # POSITIVE PULSE POLARITY (Full Scale = from 0 to + Vpp)
 # 0: analog input dynamic range = from 0 to +Vpp 
 # 50: analog input dynamic range = from +Vpp/2 to +Vpp 
@@ -108,11 +111,21 @@ ENABLE_INPUT NO
 #
 BASELINE_LEVEL 20
 
+# DC_OFFSET: set actual dc offset
+# POSITIVE PULSE POLARITY (Full Scale = from 0 to + Vpp)
+# -50: +Vpp 
+# 0: Vpp/2
+# 50: 0
+# WaveDump does not accept float number here even though the manual says so
+# DC_OFFSET 0
+
 # TRIGGER_THRESHOLD: threshold for the channel auto trigger (ADC counts)
 # options 0 to 2^N-1 (N=Number of bit of the ADC)
 #  POSITIVE PULSE POLARITY: threshold = baseline + TRIGGER_THRESHOLD
 #  NEGATIVE PULSE POLARITY: threshold = baseline - TRIGGER_THRESHOLD
-#
+# If DC_OFFSET is used to set baseline instead of BASELINE_LEVEL,
+#  POSITIVE PULSE POLARITY: threshold = TRIGGER_THRESHOLD - DC_OFFSET
+#  NEGATIVE PULSE POLARITY: threshold = DC_OFFSET - TRIGGER_THRESHOLD
 TRIGGER_THRESHOLD 30
 
 # CHANNEL_TRIGGER: channel auto trigger settings. When enabled, the ch. auto
