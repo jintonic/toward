@@ -73,7 +73,7 @@ def run_selected(event=None):
             part=line.split()
             if len(part)==0: continue
             if part[0]=='RECORD_LENGTH': nbase=int(int(part[1])*0.1)
-            if part[0]=='TRIGGER_THRESHOLD': thr=part[1]
+            if part[0]=='Threshold': thr=part[1]
             if part[0]=='PULSE_POLARITY':
                 if part[1].lower()=='negative': polarity=-1
             if part[0]=='Digitizer':
