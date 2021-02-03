@@ -7,7 +7,7 @@ void analyze(const char* run_folder="2020/02140956")
 	for (int ch=0; ch<8; ch++) {
 		if (gSystem->Which(run_folder, Form("wave%d.root",ch))) {
 			f = new TFile(Form("%s/wave%d.root",run_folder,ch));
-			t = (TTree*) f->Get("t"); t->SetName(Form("c%d",ch));
+			t = (TTree*) f->Get("t"); t->SetName(Form("t%d",ch));
 			viewer->AppendTree(t);
 		}
 	}
@@ -22,6 +22,7 @@ void analyze(const char* run_folder="2020/02140956")
 	viewer->ExpressionItem(11)->SetExpression("th", "~Location of highest point", kFALSE);
 	viewer->ExpressionItem(12)->SetExpression("tl", "~Location of lowest point", kFALSE);
 	viewer->ExpressionItem(13)->SetExpression("ttt", "~Trigger time tag", kFALSE);
+	viewer->ExpressionItem(14)->SetExpression("a", "~Area", kFALSE);
 
 	// records (for better control)
 	TTVSession* session = new TTVSession(viewer);
