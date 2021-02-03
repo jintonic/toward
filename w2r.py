@@ -17,13 +17,16 @@ rlist=Listbox(root, height=8,
         exportselection=False)
 rlist.grid(column=0, row=1, sticky='ew'); rlist.focus()
 
+folders=[] # obtain a list of folders containing WaveDumpConfig.txt
 from os import walk, system, path
 for folder, subdirs, files in walk('.'):
     if '.git' in subdirs: subdirs.remove('.git')
     if 'share' in subdirs: subdirs.remove('share')
-    if 'WaveDumpConfig.txt' in files:
-        rlist.insert("end",folder)
-        if rlist.size()%2: rlist.itemconfig("end", bg='azure')
+    if 'WaveDumpConfig.txt' in files: folders.append(folder)
+folders.sort()
+for folder in folders:
+    rlist.insert("end",folder)
+    if rlist.size()%2: rlist.itemconfig("end", bg='azure')
 rlist.selection_set(rlist.size()-1) # select the last run
 rlist.see(rlist.size()-1) # scroll to the last run
 
