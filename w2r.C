@@ -39,7 +39,6 @@ void w2r(const char* run="2020/02140956/", int ch=0, float thr=10,
 	tree->Branch("th", &th, "th/I"); // location of the highest sample
 	tree->Branch("ttt", &ttt, "ttt/I"); // trigger time tag from digitizer
 
-	int maxADC=(int)(pow(2, bits) + 0.5); // for saturation check
 	while (input->good() && input->tellg()<fsize) {
 		input->read(reinterpret_cast<char*>(&len),4); // size of data [bytes]
 		input->read(reinterpret_cast<char*>(&tmp),4); // board id
@@ -55,7 +54,7 @@ void w2r(const char* run="2020/02140956/", int ch=0, float thr=10,
 			// https://stackoverflow.com/questions/40001271
 			input->read(reinterpret_cast<char*>(&adc[i]),ssize); s[i]=(float)adc[i];
 			if (polarity==-1) { s[i]*=polarity; if (adc[i]==0) is=1; }
-		 	else { if (adc[i]==maxADC) is=1; }
+		 	else { if (adc[i]==(int)pow(2,bits)-1) is=1; }
 			if (i<nbase) b+=s[i];
 		}
 		b/=nbase; // get baseline
