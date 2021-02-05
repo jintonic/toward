@@ -15,16 +15,8 @@ void integrate(const char* run="2020/02140956", int ch=1, int min=0, int max=0,
 	TBranch *bmin = t->Branch("min",&min,"min/I");
 
 	bool search4boundaries=false; t->GetEntry(0);
-	if (min<=0 || max<=min || max>=n) { // if not specified correctly
-		if (tt==-1) { // external trigger, integration range must be specified
-			cout<<"run "<<run<<" is taken with external trigger, please use"<<endl;
-			cout<<"root npe.C'(int run,int channel,int min,int max)'\nto specify "
-				"integration range with 0 < min < max < number of samples"<<endl;
-			return;
-		} else { // internal trigger
-			search4boundaries=true;
-		}
-	}
+	if (min<=0 || max<=min || max>=n) // if not specified correctly
+			search4boundaries=true; // search for boundary by ourselves
 
 	int nevt=t->GetEntries();
 	cout<<"Processing "<<nevt<<" events..."<<endl;
@@ -32,6 +24,7 @@ void integrate(const char* run="2020/02140956", int ch=1, int min=0, int max=0,
 		t->GetEntry(i); if (i%5000==0) cout<<"Processing event "<<i<<endl;
 		if (search4boundaries) {
 			min=tt-front;
+			if (min<0) min==0; if (tt<0) tt==0;
 			// search for downward zero crossing point
 			max=0;
 			for (int j=tt; j<n; j++) { if (s[j]<0) max=j+back; if (max>0) break; }
