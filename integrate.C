@@ -24,7 +24,7 @@ void integrate(const char* run="2020/02140956", int ch=1, int min=0, int max=0,
 		t->GetEntry(i); if (i%5000==0) cout<<"Processing event "<<i<<endl;
 		if (search4boundaries) {
 			min=tt-front;
-			if (min<0) min==0; if (tt<0) tt==0;
+			if (min<0) min=0; if (tt<0) tt=0;
 			// search for downward zero crossing point
 			max=0;
 			for (int j=tt; j<n; j++) { if (s[j]<0) max=j+back; if (max>0) break; }
