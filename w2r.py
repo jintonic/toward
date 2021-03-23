@@ -103,8 +103,8 @@ rlist.bind("<<ListboxSelect>>", run_selected)
 run_selected()
 
 def convert_file(event=None):
-    run=rlist.get(rlist.curselection()[0]).replace("\\","/");
-    ch=clist.curselection()[0]
+    run=rlist.get(rlist.curselection()[0]).replace("\\","/")
+    ch=clist.get(clist.curselection()[0]); ch=ch[4:-4]
     script='w2r.C("{}",{},{},{},{},{},{})'.format(
             run,ch,thr,polarity,nbase,ssize,bits)
     Popen(['root', '-b', '-q', script])
