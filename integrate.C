@@ -1,7 +1,7 @@
 // Integrate waveforms in [min, max). If min, max are not specified,
 //   min = threshold crossing point - front
 //   max = downward zero crossing point + back
-void integrate(const char* run="2020/02140956", int ch=1, int min=0, int max=0,
+void integrate(const char* run="2020/02/02140956", int ch=1, int min=0, int max=0,
 	 	int front=50, int back=10)
 {
 	TFile *file = new TFile(Form("%s/wave%d.root",run,ch),"update");
