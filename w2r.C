@@ -6,7 +6,8 @@
 // - saturation status saved
 //
 // Arguments:
-// - run: run folder
+// - run: run directory
+// - file: input file
 // - ch: channel number
 // - thr: threshold in ADC unit
 // - polarity: polarity of triggered pulse (1: positive, -1: negative)
@@ -14,10 +15,10 @@
 // - ssize: size of a sample value in byte
 // - bits: resolution of digitizer
 
-void w2r(const char* run="2020/02140956/", int ch=0, float thr=10,
-	 	float polarity=1, int nbase=100, int ssize=2, int bits=10)
+void w2r(const char* run="", const char* file="", int ch=0,
+	 	float thr=10, int polarity=1, int nbase=100, int ssize=2, int bits=10)
 {
-	ifstream *input = new ifstream(Form("%s/wave%d.dat",run,ch), ios::binary);
+	ifstream *input = new ifstream(Form("%s/%s",run,file), ios::binary);
 	input->seekg(0, ios::end); // move getter to the end of file
 	int fsize = input->tellg();// get input file size
 	input->seekg(0, ios::beg); // move getter back to the beginning
