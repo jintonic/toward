@@ -13,13 +13,13 @@
 
 ## Features
 
-- Works with [WaveDump][] and [CoPMASS][] without any modification of code on both sides
+- Works with [WaveDump][] and [CoMPASS][] without any modification of code on both sides
 - All scripts can be run directly in Linux, Mac and Windows without compilation and installation
 - GUI across three major platforms
 - Data are saved as basic types in [ROOT][] [TTree][] [ntuple][]s, which can be easily open without loading extra libraries defining complicated data structure. [Uproot4][] can be used to load the data for analysis in [Python][]
 - Super short variable names for quick analysis using [ROOT][] [TTree][]::[Draw][] function in a [ROOT interactive session](https://root.cern.ch/root/html534/guides/users-guide/GettingStarted.html). For example,
 ```cpp
-[root] t->Draw("s:Iteration$","is==0","l",5,2)
+root[1] t->Draw("s:Iteration$","is==0","l",5,2)
 ```
 shows 5 non-saturated (`is==0`) waveforms (`s`: individual waveform samples, [Iterations][Draw]\$: sample index) starting from event 2:
 
