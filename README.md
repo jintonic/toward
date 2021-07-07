@@ -1,75 +1,19 @@
 <img src="share/assets/logo.png" alt="TOWARD - Tools, Objects for Waveform Analysis, Reformatting & Drawing" width="40%" align="right">
 
-[Python][] and [ROOT][] scripts for the process of digital waveforms taken with a [CAEN][] [digitizer][] and its [WaveDump][] readout program.
+[Python][] and [ROOT][] scripts for the process of digital waveforms taken with a [CAEN][] [digitizer][] and its readout programs.
 
 [Git]:https://git-scm.com/
 [Python]:https://www.python.org/
 [ROOT]:https://root.cern.ch
 [CAEN]:https://www.caen.it/
 [digitizer]:https://www.caen.it/sections/digitizer-families/
-[WaveDump]:https://www.caen.it/products/caen-wavedump/
 
-[![Getting started](https://img.shields.io/badge/getting-started-blue?style=flat)](#getting-started)
+[![Getting started](https://img.shields.io/badge/Get-started-blue?style=flat)](#getting-started)
 [![WaveDump config](https://img.shields.io/badge/Wave-Dump-red?style=flat)](#wavedump-configurations)
-
-## Prerequisites
-
-[CAEN][] [WaveDump][] is not needed to run the scripts here, but its output is the input for these scripts. A few example [WaveDump][] output files named as `wave0.dat` are included in the run data folder [2020](2020) so that the processing scripts can be tested without running [WaveDump][].
-
-CERN [ROOT][] is needed to run scripts ended with `.C`. The [binary distribution of ROOT 5.34/38 for Windows](https://root.cern/releases/release-53438/) is good enough for this project and should be used before [version 6](https://root.cern/install/all_releases) for Windows becomes stable.
-
-[Python][] is available for Linux, Mac and Windows. [Python][] packages [Uproot4][], [awkward][] and [matplotlib][] are needed. They can be installed as a normal user using the [pip][] command:
-
-```sh
-$ pip install --upgrade pip # upgrade pip
-$ pip install uproot4
-$ pip install awkward
-$ pip install matplotlib
-```
-
-[awkward]:https://pypi.org/project/awkward/
-[matplotlib]:https://matplotlib.org/
-[pip]:https://pypi.org/project/pip/
-
-## Getting started
-
-### Exploring example data
-
-A few example [WaveDump][] output files named as `wave0.dat`, etc., are included in the folder [2020](2020) to demonstrate the usage of the processing scripts:
-
-- [2020/02140956](2020/02140956) contains coincidently triggered waveforms from two SiPMs sandwiching a BGO crystal taken with a [DT5751][] digitizer
-- [2020/06272158](2020/06272158) contains waveforms from a Hamamatsu SiPM module taken with a [DT5751][] digitizer
-- [2020/12021523](2020/12021523) contains waveforms from a HPGe detector taken with a [DT5720][] digitizer
-
-To explore them, please
-
-1. download the package from <https://github.com/jintonic/toward.git>
-2. get to the `toward` directory, double click [w2r.py](w2r.py) to convert `wave?.dat` to `wave?.root`. The script can also be run in a terminal as `python3 w2r.py` or simply `./w2r.py`. Note that in [Git Bash][] or [MobaXterm][], the command has to be changed to `winpty python w2r.py` to enable [running Python installed in Windows in a Linux-like terminal](https://stackoverflow.com/questions/48199794/winpty-and-git-bash)
-3. click `Show` button on the window created by running [w2r.py](w2r.py) to show waveforms in newly created `wave?.root` using script [show.py](show.py)
-4. use other scripts to process the generated root file
-
-[Git Bash]:https://gitforwindows.org/
-[MobaXterm]:https://mobaxterm.mobatek.net/
-
-### Analyzing new data
-
-1. create a new run data folder named `yyyy/mmddHHMM/` (please used 24-hour format for time) in your local copy of `toward`.
-2. get into the just created folder and create a [WaveDump][] configuration file there named [WaveDumpConfig.txt](2020/02140956/WaveDumpConfig.txt)
-3. run `wavedump WaveDumpConfig.txt` there to create binary output file `wave?.dat`, where `?` is the channel number. Note that in Window, you may have to run [WaveDump][] from its installation folder, its configuration file and output files need to be copied or moved from there to the newly created folder. In order for [w2r.py](w2r.py) to process the configuration file properly, please don't name it other than `WaveDumpConfig.txt`. Settings that can be tuned in the configuration file can be found in the WaveDump [manual][].
-4. follow the previous section starting from step 2.
-
-## Scripts
-
-- [w2r.C](w2r.C): a [ROOT script][] to convert a [CAEN][] [WaveDump][] binary output to [ROOT][] format, align baselines of waveforms to zero, and save basic parameters of waveforms
-- [w2r.py](w2r.py): a [Python][] script to fetch information from a [WaveDump][] configuration file and pass it to [w2r.C](w2r.C)
-- [q2i.C](q2i.C): a [ROOT script][] to get heights of charge pulses using [trapezoidal filter](https://nukephysik101.wordpress.com/2020/03/20/trapezoid-filter/) and convert charge pulses to current ones using [numerical differentiation](https://terpconnect.umd.edu/%7Etoh/spectrum/Differentiation.html)
-- [i2q.C](i2q.C): a [ROOT script][] to convert current pulses to charge ones
-- [integrate.C](integrate.C): a [ROOT script][] to integrate waveforms in a certain range and save the result to the original data [tree][]
-- [show.py](show.py): a [Python][] script to show waveforms in a [ROOT][] file.
 
 ## Features
 
-- Works with [WaveDump][] without any modification of code on both sides
+- Works with [WaveDump][] and [CoPMASS][] without any modification of code on both sides
 - All scripts can be run directly in Linux, Mac and Windows without compilation and installation
 - GUI across three major platforms
 - Data are saved as basic types in [ROOT][] [TTree][] [ntuple][]s, which can be easily open without loading extra libraries defining complicated data structure. [Uproot4][] can be used to load the data for analysis in [Python][]
@@ -88,9 +32,73 @@ shows 5 non-saturated (`is==0`) waveforms (`s`: individual waveform samples, [It
 [Draw]:https://root.cern.ch/doc/master/classTTree.html#a73450649dc6e54b5b94516c468523e45
 [ROOT script]:https://root.cern.ch/root/htmldoc/guides/users-guide/Cling.html
 
+## Prerequisites
+
+A [CAEN][] readout program ([WaveDump][] or [CoMPASS][]) is not needed to run the scripts here, but its output is the input for these scripts. A few example [WaveDump][] output files named as `wave0.dat` are included in the run data folder [2020](2020) so that the processing scripts can be tested without a real data taking.
+
+CERN [ROOT][] is needed to run scripts ended with `.C`. Any version can be used for MacOS or Linux. The [binary distribution of ROOT 5.34/38 for Windows](https://root.cern/releases/release-53438/) is good enough for this project and should be used before [version 6](https://root.cern/install/all_releases) for Windows becomes stable.
+
+[Python][] is available for Linux, Mac and Windows. [Python][] packages [Uproot4][], [awkward][] and [matplotlib][] are needed. They can be installed as a normal user using the [pip][] command:
+
+```sh
+$ pip install --upgrade pip # upgrade pip
+$ pip install uproot4
+$ pip install awkward
+$ pip install matplotlib
+```
+
+[WaveDump]:https://www.caen.it/products/caen-wavedump/
+[CoMPASS]:https://www.caen.it/products/compass/
+[awkward]:https://pypi.org/project/awkward/
+[matplotlib]:https://matplotlib.org/
+[pip]:https://pypi.org/project/pip/
+
+## Getting started
+
+### Exploring example data
+
+A few example [WaveDump][] output files named as `wave0.dat`, etc., are included in the folder [2020](2020) to demonstrate the usage of the processing scripts:
+
+- [2020/02140956](2020/02140956) contains coincidently triggered waveforms from two SiPMs sandwiching a BGO crystal taken with a [DT5751][] digitizer
+- [2020/06272158](2020/06272158) contains waveforms from a Hamamatsu SiPM module taken with a [DT5751][] digitizer
+- [2020/12021523](2020/12021523) contains waveforms from a HPGe detector taken with a [DT5720][] digitizer
+
+To explore them, please
+
+1. download the package from <https://github.com/jintonic/toward.git>
+2. get to the `toward` directory, double click [b2r.py](b2r.py) to convert `wave?.dat` to `wave?.root`. The script can also be run in a terminal as `python3 b2r.py` or simply `./b2r.py`. Note that in [Git Bash][] or [MobaXterm][], the command has to be changed to `winpty python b2r.py` to enable [running Python installed in Windows in a Linux-like terminal](https://stackoverflow.com/questions/48199794/winpty-and-git-bash)
+3. click `Show` button on the window created by running [b2r.py](b2r.py) to show waveforms in newly created `wave?.root` using script [show.py](show.py)
+4. use other scripts to process the generated root file
+
+[Git Bash]:https://gitforwindows.org/
+[MobaXterm]:https://mobaxterm.mobatek.net/
+
+### Analyzing new data
+
+In case of [WaveDump][]:
+1. create a new run data folder named, for example, `yyyy/mmddHHMM/` in your local copy of `toward`. Note that there is no specific requirement on the naming scheme of your data folders. It will be recognized as a run data folder if it contains a [WaveDump][] configuration file [WaveDumpConfig.txt](2020/02140956/WaveDumpConfig.txt)
+2. get into the just created folder and create a [WaveDump][] configuration file there named [WaveDumpConfig.txt](2020/02140956/WaveDumpConfig.txt)
+3. run `wavedump WaveDumpConfig.txt` there to create binary output file `wave?.dat`, where `?` is the channel number. Note that in Window, you may have to run [WaveDump][] from its installation folder, its configuration file and output files need to be copied or moved from there to the newly created folder. In order for [b2r.py](b2r.py) to process the configuration file properly, please don't name it other than `WaveDumpConfig.txt`. Settings that can be tuned in the configuration file can be found in the WaveDump [manual][].
+4. follow the previous section starting from step 2.
+
+In case of [CoMPASS][]:
+1. create a new run data folder named, for example, `yyyy/mmddHHMM/` in your local copy of `toward` (Note that there is no specific requirement on the naming scheme of your data folders. It will be recognized as a run data folder if it contains a [CoMPASS][] configuration file: `settings.xml`).
+2. run [CoMPASS][], save binary data to the newly created folder, also copy its configuration file `settings.xml` to the same folder together with the data
+4. follow the previous section starting from step 2.
+
+## Scripts
+
+- [w2r.C](w2r.C): a [ROOT script][] to convert a [CAEN][] [WaveDump][] binary output to [ROOT][] format, align baselines of waveforms to zero, and save basic parameters of waveforms
+- [c2r.C](c2r.C): a [ROOT script][] to convert a [CAEN][] [CoMPASS][] binary output to [ROOT][] format, align baselines of waveforms to zero, and save basic parameters of waveforms
+- [b2r.py](b2r.py): a [Python][] script to fetch information from a [CAEN][] DAQ configuration file and pass it to [w2r.C](w2r.C) or [c2r.C](c2r.C) based on the configuration file found in the run data folder
+- [q2i.C](q2i.C): a [ROOT script][] to get heights of charge pulses using [trapezoidal filter](https://nukephysik101.wordpress.com/2020/03/20/trapezoid-filter/) and convert charge pulses to current ones using [numerical differentiation](https://terpconnect.umd.edu/%7Etoh/spectrum/Differentiation.html)
+- [i2q.C](i2q.C): a [ROOT script][] to convert current pulses to charge ones
+- [integrate.C](integrate.C): a [ROOT script][] to integrate waveforms in a certain range and save the result to the original data [tree][]
+- [show.py](show.py): a [Python][] script to show waveforms in a [ROOT][] file.
+
 ## Data structure
 
-The way to organize digital waveform data depends on analysis tools and ecosystem to be used. A [class][] named `Waveform` or `Waveforms` may not be the best choice. Generally speaking, data structures are the way we organize information on our computer; it should involve things more than just [data members][] of a [class][]. For example, a well designed directory structure and output file naming scheme may simplify the coding significantly. They should be considered as a part of data structure. [WaveDump][] saves waveforms from each channel separately, for example, `wave0.dat` is from channel 0. In [TOWARD][], they are organized in folders named as `yyyy/mmddHHMM/`. You can increase the level of subfolders, for example, `yyyy/mm/dd/HHMM/`. As long as there is a [WaveDump][] configuration file `WaveDumpConfig.txt` saved in it, it will be recognized as a data directory.
+The way to organize digital waveform data depends on analysis tools and ecosystem to be used. A [class][] named `Waveform` or `Waveforms` may not be the best choice. Generally speaking, data structures are the way we organize information on our computer; it should involve things more than just [data members][] of a [class][]. For example, a well designed directory structure and output file naming scheme may simplify the coding significantly. They should be considered as a part of data structure. [WaveDump][] saves waveforms from each channel separately, for example, `wave0.dat` is from channel 0. In `TOWARD`, they are organized in folders named as `yyyy/mmddHHMM/`. You can increase the level of subfolders, for example, `yyyy/mm/dd/HHMM/`. As long as there is a [WaveDump][] configuration file `WaveDumpConfig.txt` (or a [CoMPASS][] one: `settings.xml`) saved in it, it will be recognized as a data directory.
 
 [class]:https://en.wikipedia.org/wiki/Class_(computer_programming)
 [data members]:http://www.cplusplus.com/doc/tutorial/classes/
@@ -108,7 +116,7 @@ Make sure that the following two options are set as follows in your [WaveDump][]
 # we need to change it to BINARY to save disk space.
 OUTPUT_FILE_FORMAT BINARY
 
-# By default WaveDump does not attach a header to each waveform, 
+# By default WaveDump does not attach a header to each waveform,
 # we need to enable it to know the size of a waveform data block.
 OUTPUT_FILE_HEADER YES
 ```
