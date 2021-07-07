@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 usage='''
-Convert WaveDump binary output file from DAQ to ROOT files:
-python3 w2r.py
+Convert CAEN DAQ binary output file to ROOT format:
+python3 b2r.py
 '''
 from tkinter import *
 root=Tk(); root.resizable(0,0)
-root.wm_title('Convert WaveDump binary output to ROOT files')
+root.wm_title('Convert CAEN DAQ binary output to ROOT format')
 def quit_gui(event=None): root.quit(); root.destroy()
 root.bind('q', quit_gui)
 
@@ -17,20 +17,21 @@ rlist=Listbox(root, height=8,
         exportselection=False)
 rlist.grid(column=0, row=1, sticky='ew'); rlist.focus()
 
-folders=[] # obtain a list of folders containing WaveDumpConfig.txt
-from os import walk, system, path
+folders=[] # obtain a list of folders containing DAQ cfg files
+from os import walk, system, path, listdir
 for folder, subdirs, files in walk('.'):
     if '.git' in subdirs: subdirs.remove('.git')
     if 'share' in subdirs: subdirs.remove('share')
     if 'WaveDumpConfig.txt' in files: folders.append(folder)
+    if 'settings.xml' in files: folders.append(folder)
 folders.sort()
 for folder in folders:
     rlist.insert("end",folder)
-    if rlist.size()%2: rlist.itemconfig("end", bg='azure')
+    if rlist.size()%2: rlist.itemconfig("end", bg='azure', fg='black')
 rlist.selection_set(rlist.size()-1) # select the last run
 rlist.see(rlist.size()-1) # scroll to the last run
 
-Label(root, text="Select channel file:").grid(column=1, row=0, sticky='nw')
+Label(root, text="Select binary file:").grid(column=1, row=0, sticky='nw')
 clist=Listbox(root,height=8,exportselection=False,
         selectbackground='orchid',selectforeground='white')
 clist.grid(column=1, row=1, sticky='ew')
@@ -56,19 +57,13 @@ ana=Button(root, text='Analyze', command=call_analyze_C)
 ana.grid(column=2, row=2, sticky="sw")
 ana.bind('<Return>', call_analyze_C)
 
-Label(root, text="WaveDumpConfig.txt:").grid(column=0, row=2, sticky='sw')
+Label(root, text="DAQ Configurations:").grid(column=0, row=2, sticky='sw')
 text=Text(root, width=65, height=25)
 text.grid(column=0, row=3, columnspan=3)
 
-def run_selected(event=None):
-    clist.delete(0,'end')
-    flist['state']='normal'; flist.delete(0,'end')
-    text['state']='normal'; text.delete(1.0,'end')
-
-    # parse configuraiton file
+thr,polarity,nbase,ssize,bits=10,1,100,2,14
+def parse_wavedump_cfg(run=''):
     global thr, polarity, nbase, ssize, bits
-    thr,polarity,nbase,ssize,bits=10,1,100,2,14
-    run=rlist.get(rlist.curselection()[0])
     with open(run+'/WaveDumpConfig.txt','r') as cfg:
         for line in cfg:
             if line=='': continue
@@ -78,43 +73,62 @@ def run_selected(event=None):
             if part[0]=='RECORD_LENGTH': nbase=int(int(part[1])*0.1)
             if part[0]=='Threshold': thr=part[1]
             if part[0]=='PULSE_POLARITY':
-                if part[1].lower()=='negative': polarity=-1
+                polarity=1 if part[1].lower()=='positive' else -1
             if part[0]=='Digitizer':
                 if part[1]>'750': bits=10
                 elif part[1]>='740': bits=12
                 elif part[1]=='720': bits=12
                 else:
-                    if part[1]=='721' or part[1]=='731': byte=1
+                    if part[1]=='721' or part[1]=='731': ssize=1
             text.insert(INSERT,line)
-    text['state']='disabled'
 
-    # list binary and root files
-    for ch in range(8):
-        if path.exists(run+'/wave'+str(ch)+'.root'):
-            flist.insert("end",'wave'+str(ch)+'.root')
-        if path.exists(run+'/wave'+str(ch)+'.dat'):
-            clist.insert("end",'wave'+str(ch)+'.dat')
-            if clist.size()%2: clist.itemconfig("end", bg='azure')
+import xml.etree.ElementTree as ET
+def parse_compass_cfg(run=''):
+    tree = ET.parse(run+'/settings.xml'); cfg = tree.getroot()
+    daq = cfg.find('board').find('modelName').text
+    parameters = cfg.find('board').find('parameters')
+    global thr, polarity, nbase, ssize, bits
+    thr = parameters[8][1][0].text
+    polarity = 1 if parameters[4][1][0].text == 'POLARITY_POSITIVE' else -1
+    nbase = int(float(cfg.find('board').find('sampleTime').text)*0.1)
+    bits = cfg.find('board').find('adcBitCount').text
+    text.insert(INSERT,'digitizer: {}\nthreshold: {}\npolarity: {}'.format(
+        daq,thr,polarity))
+
+def list_files_in(run=''):
+    clist.delete(0,'end'); flist.delete(0,'end')
+    for file in listdir(run):
+        if len(file) > 4:
+            if file[-4:] in (".bin", ".dat"): clist.insert("end",file)
+            if file[-5:] == ".root": flist.insert("end",file)
+        if clist.size()%2: clist.itemconfig("end", bg='azure', fg='black')
     clist.selection_set(0)
     show['state']='normal' if flist.size()>0 else 'disabled'
     ana['state']='normal' if flist.size()>0 else 'disabled'
-    flist['state']='disabled'
+
+def run_selected(event=None):
+    text.delete(1.0,'end')
+
+    run=rlist.get(rlist.curselection()[0])
+    for folder, subdirs, files in walk(run):
+        if 'WaveDumpConfig.txt' in files: parse_wavedump_cfg(run)
+        if 'settings.xml' in files: parse_compass_cfg(run)
+
+    list_files_in(run)
+
 rlist.bind("<<ListboxSelect>>", run_selected)
 run_selected()
 
 def convert_file(event=None):
     run=rlist.get(rlist.curselection()[0]).replace("\\","/")
-    ch=clist.get(clist.curselection()[0]); ch=ch[4:-4]
-    script='w2r.C("{}",{},{},{},{},{},{})'.format(
-            run,ch,thr,polarity,nbase,ssize,bits)
-    Popen(['root', '-b', '-q', script])
-    flist['state']='normal'; flist.delete(0,'end')
-    for ch in range(8):
-        if path.exists(run+'/wave'+str(ch)+'.root'):
-            flist.insert("end",'wave'+str(ch)+'.root')
-    show['state']='normal' if flist.size()>0 else 'disabled'
-    ana['state']='normal' if flist.size()>0 else 'disabled'
-    flist['state']='disabled'
+    file=clist.get(clist.curselection()[0])
+    ch=file[8:9] if file[-3:]=='bin' else file[4:5]
+    script='c2r.C' if file[-3:]=='bin' else 'w2r.C'
+    argument='{}("{}","{}",{},{},{},{},{},{})'.format(
+            script,run,file,ch,thr,polarity,nbase,ssize,bits)
+    Popen(['root', '-b', '-q', argument]).wait()
+    list_files_in(run)
+
 convert=Button(root, text='Convert', command=convert_file)
 convert.grid(column=1,row=2,sticky='se')
 convert.bind('<Return>', convert_file)
