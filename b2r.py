@@ -97,10 +97,14 @@ def parse_compass_cfg(run=''):
 
 def list_files_in(run=''):
     clist.delete(0,'end'); flist.delete(0,'end')
-    for file in listdir(run):
-        if len(file) > 4:
-            if file[-4:] in (".bin", ".dat"): clist.insert("end",file)
-            if file[-5:] == ".root": flist.insert("end",file)
+    for each in listdir(run):
+        if each == "RAW": # CoMPASS folder structure
+            for raw in listdir(run+"/RAW"):
+                if len(raw)>4:
+                    if raw[-4:]==".bin": clist.insert("end",raw)
+        if len(each) > 4:
+            if each[-4:]==".dat": clist.insert("end",each) # for WaveDump
+            if each[-5:] == ".root": flist.insert("end",each)
         if clist.size()%2: clist.itemconfig("end", bg='azure', fg='black')
     clist.selection_set(0)
     show['state']='normal' if flist.size()>0 else 'disabled'
