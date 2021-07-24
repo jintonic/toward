@@ -5,7 +5,7 @@ python3 b2r.py
 '''
 from tkinter import *
 root=Tk(); root.resizable(0,0)
-root.wm_title('Convert CAEN DAQ binary output to ROOT format')
+root.wm_title('Convert CAEN DAQ binary output to ROOT format (press q to quit)')
 def quit_gui(event=None): root.quit(); root.destroy()
 root.bind('q', quit_gui)
 
@@ -44,21 +44,27 @@ from subprocess import Popen
 def call_show_py(event=None):
     if rlist.size()==0 or flist.size()==0: return
     run=rlist.get(rlist.curselection()[0]).replace('\\','/')
+    for folder, subdirs, files in walk(run):
+        if "RAW" in subdirs: run=run+"/RAW"
     Popen(['python3', 'show.py', run])
 show=Button(root, text='Show', command=call_show_py)
 show.grid(column=2, row=2, sticky='se')
 show.bind('<Return>', call_show_py)
+root.bind('s', call_show_py)
 
 def call_analyze_C(event=None):
     if rlist.size()==0 or flist.size()==0: return
-    a='analyze.C("'+rlist.get(rlist.curselection()[0]).replace('\\','/')+'")'
-    Popen(['root', '-l', a])
+    run=rlist.get(rlist.curselection()[0]).replace('\\','/')
+    for folder, subdirs, files in walk(run):
+        if "RAW" in subdirs: run=run+"/RAW"
+    Popen(['root', '-l', 'analyze.C("'+run+'")'])
 ana=Button(root, text='Analyze', command=call_analyze_C)
 ana.grid(column=2, row=2, sticky="sw")
 ana.bind('<Return>', call_analyze_C)
+root.bind('a', call_analyze_C)
 
 Label(root, text="DAQ Configurations:").grid(column=0, row=2, sticky='sw')
-text=Text(root, width=65, height=25)
+text=Text(root, width=80, height=25)
 text.grid(column=0, row=3, columnspan=3)
 
 thr,polarity,nbase,ssize,bits=10,1,100,2,14
@@ -97,14 +103,11 @@ def parse_compass_cfg(run=''):
 
 def list_files_in(run=''):
     clist.delete(0,'end'); flist.delete(0,'end')
-    for each in listdir(run):
-        if each == "RAW": # CoMPASS folder structure
-            for raw in listdir(run+"/RAW"):
-                if len(raw)>4:
-                    if raw[-4:]==".bin": clist.insert("end",raw)
-        if len(each) > 4:
-            if each[-4:]==".dat": clist.insert("end",each) # for WaveDump
-            if each[-5:] == ".root": flist.insert("end",each)
+    for folders, subdirs, files in walk(run):
+        for file in files:
+            if file[-4:]==".dat": clist.insert("end",file) # WaveDump output
+            if file[-4:]==".bin": clist.insert("end",file) # CoMPASS output
+            if file[-4:]=="root": flist.insert("end",file)
         if clist.size()%2: clist.itemconfig("end", bg='azure', fg='black')
     clist.selection_set(0)
     show['state']='normal' if flist.size()>0 else 'disabled'
@@ -128,14 +131,16 @@ def convert_file(event=None):
     file=clist.get(clist.curselection()[0])
     ch=file[8:9] if file[-3:]=='bin' else file[4:5]
     script='c2r.C' if file[-3:]=='bin' else 'w2r.C'
+    if file[-3:]=="bin": run=run+"/RAW"
     argument='{}("{}","{}",{},{},{},{},{},{})'.format(
             script,run,file,ch,thr,polarity,nbase,ssize,bits)
     Popen(['root', '-b', '-q', argument]).wait()
     list_files_in(run)
 
 convert=Button(root, text='Convert', command=convert_file)
-convert.grid(column=1,row=2,sticky='se')
+convert.grid(column=1,row=2)
 convert.bind('<Return>', convert_file)
+root.bind('c', convert_file)
 
 # give focus to the GUI window in Mac
 # https://stackoverflow.com/questions/17774859
