@@ -20,7 +20,7 @@ void w2r(const char* run="", const char* file="", int ch=0,
 {
 	ifstream *input = new ifstream(Form("%s/%s",run,file), ios::binary);
 	input->seekg(0, ios::end); // move getter to the end of file
-	int fsize = input->tellg();// get input file size
+	long int fsize = input->tellg();// get input file size
 	input->seekg(0, ios::beg); // move getter back to the beginning
 
 	TFile *output = new TFile(Form("%s/wave%d.root",run,ch), "recreate");
