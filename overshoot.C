@@ -25,7 +25,7 @@ void overshoot(const char* dir = "~/git/toward/2021/08/310932/", int ch=0)
 	// model
 	TF1 *f = new TF1("f",
 			"[0]*([1]*exp(-(x-[3])/[2])-[2]*exp(-(x-[3])/[1]))/([1]-[2])");
-	f->SetParNames("Norm","#tau_i", "#tau", "Start");
+	f->SetParNames("Norm","#tau_{i}", "#tau", "Start");
 	f->SetLineColor(kRed);
 	//f->SetParameters(200,243,3690,6000);f->Draw();gPad->Print("f.png");//debug
 
