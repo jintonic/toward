@@ -1,4 +1,5 @@
-// Convert binary data from Struck SIS3316 to ROOT format
+// Convert binary output from Struck SIS3316 to ROOT format
+// Ref. https://github.com/gcrich/binaryToROOT-NGM3316
 // 
 // Arguments:
 // - nm: number of modules (cards)
@@ -16,8 +17,8 @@ void s2r(const int nm = 2, const char* fi =
 	TFile *output = new TFile(Form("%s",fo), "recreate");
 	const int nc = 16; // number of channels in one module (card)
 	short adc[99999]= {0}; float s[99999]={0}; // waveform samples
-	int n, len, word, cha, evt, ttt, tt, th, tl;
-	float b, db, h, l; bool is; char byte[65536];
+	int n, len, cha, evt, ttt, tt, th, tl;
+	float b, db, h, l; bool is;
 	TTree *t[128]={0};
 	for (int i=0; i<nm*nc; i++) {
 		t[i]= new TTree(Form("c%d",i), Form("SIS3316 channel %d",i));
@@ -34,29 +35,26 @@ void s2r(const int nm = 2, const char* fi =
 		t[i]->Branch("ttt", &ttt, "ttt/I"); // trigger time tag from digitizer
 	}
 
-	ttt=0;
 	input->seekg(400); // skip file header
-	while (input->good() && input->tellg()<fsize) {
-		input->read(byte,40); // spill header (abba)
-		for (int i=0; i<10; i++) { // print spill header
-			for (int j=0; j<4; j++) printf("%x ", byte[i*4+j]);
-			cout<<i<<endl;
-		}
+	int word[65536]; // assuming data from one channel is less than 65536
+ 	char* byte = (char*) word; // index to count in byte instead of word
+	while (input->good() && input->tellg()<fsize-80) { // 80: spill + mo + ch hdr
+		input->read(byte,40); // get spill header (40 bytes), filled with 0xabba
+		for (int i=0; i<10; i++) printf("spill header word %d: 0x%x\n", i, word[i]);
 		for (int mo=0; mo<2; mo++) {
-			input->read(byte,8); // module header
+			input->read(byte,8); // get module header (8 bytes), including card number
+			for (int i=0; i<2; i++) printf("card header word %d: 0x%x\n", i, word[i]);
 			for (int ch=0; ch<16; ch++) {
-				input->read(byte,32); // channel header
-				int nw = byte[28]; // number of words
-				printf("size of channel %d in module %d: %u words\n", ch, mo, nw);
-				input->read(byte,nw*4); // channel data
-				//printf("format bits: %u, ch: %u, ",(UChar_t)(word&0xf), (UShort_t)((word&0xfff0)>>4));
+				input->read(byte,32); // get channel header (8 words)
+				printf("size of channel data block: %u words\n", word[7]);
+				input->read(byte,word[7]*4); // get one block of channel data
+				printf("channel: %u, ", (short)((*word&0xfff0)>>4));
+				bitset<4> format(*byte); cout<<"format bits: "<<format<<endl;
 				//ULong64_t timestamp = (ULong64_t)(word&0xffff0000) << 16;
 				//timestamp = timestamp | (&word)[1];
 				//printf("time stamp: %llu\n", timestamp);
 			}
 		}
-		ttt++;
-		cout<<"ttt: "<<ttt<<endl;
 	}
 	input->close();
 
