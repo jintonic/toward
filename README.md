@@ -10,6 +10,7 @@
 
 [![Getting started](https://img.shields.io/badge/Get-started-blue?style=flat)](#getting-started)
 [![WaveDump config](https://img.shields.io/badge/Wave-Dump-red?style=flat)](#wavedump-configurations)
+[![Struck SIS3316](https://img.shields.io/badge/Struck-SIS3316-yellow?style=flat)](#struck-sis3316)
 
 ## Features
 
@@ -134,8 +135,8 @@ It is followed by waveform samples as 16 or 8-bit integers.
 [share/vim/syntax/WDcfg.vim](share/vim/syntax/WDcfg.vim) enables [syntax highlighting][1] of a [WaveDump][] configuration file in [vim][]. It can be installed the following way in Linux or Mac:
 
 ```sh
-$ mkdir -p ~/.vim/after/syntax
-$ cp share/vim/syntax/WDcfg.vim ~/.vim/after/syntax
+mkdir -p ~/.vim/after/syntax
+cp share/vim/syntax/WDcfg.vim ~/.vim/after/syntax
 ```
 
 If you don't have file `~/.vim/after/filetype.vim`, create one and put the following content in it to let [vim][] recognize the `filetype` of `WaveDumpConfig.txt` as `WDcfg` instead of `text`:
@@ -159,3 +160,5 @@ A [WaveDump][] configuration file may look like the following in vim with [synta
 [DT5751]:https://www.caen.it/products/dt5751/
 [DT5720]:https://www.caen.it/products/dt5720/
 [manual]:https://usermanual.wiki/Document/UM2091WaveDumpUserManualrev13.87092449/view
+
+## Struck SIS3316
