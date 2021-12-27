@@ -1,16 +1,19 @@
 <img src="share/assets/logo.png" alt="TOWARD - Tools, Objects for Waveform Analysis, Reformatting & Drawing" width="40%" align="right">
 
-[Python][] and [ROOT][] scripts for the process of digital waveforms taken with [CAEN][] [digitizer][]s and readout programs.
+[Python][] and [ROOT][] scripts for the process of digital waveforms taken with [CAEN][] [digitizer][]s and readout programs. A similar project, [ROSA][] is created for [Struck][] [ADCs][].
 
 [Git]:https://git-scm.com/
 [Python]:https://www.python.org/
 [ROOT]:https://root.cern.ch
 [CAEN]:https://www.caen.it/
 [digitizer]:https://www.caen.it/sections/digitizer-families/
+[ROSA]: https://github.com/jintonic/rosa
+[Struck]: https://www.struck.de
+[ADCs]: https://www.struck.de/vme.htm
 
-[![Getting started](https://img.shields.io/badge/Get-started-blue?style=flat)](#getting-started)
+[![Getting started](https://img.shields.io/badge/Get-Started-blue?style=flat)](#getting-started)
 [![WaveDump config](https://img.shields.io/badge/Wave-Dump-red?style=flat)](#wavedump-configurations)
-[![Struck SIS3316](https://img.shields.io/badge/Struck-SIS3316-yellow?style=flat)](#struck-sis3316)
+[![Data structure](https://img.shields.io/badge/Data-Structure-yellow?style=flat)](#data-structure)
 
 ## Features
 
@@ -161,4 +164,3 @@ A [WaveDump][] configuration file may look like the following in vim with [synta
 [DT5720]:https://www.caen.it/products/dt5720/
 [manual]:https://usermanual.wiki/Document/UM2091WaveDumpUserManualrev13.87092449/view
 
-## Struck SIS3316
