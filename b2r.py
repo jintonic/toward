@@ -129,7 +129,12 @@ run_selected()
 def convert_file(event=None):
     run=rlist.get(rlist.curselection()[0]).replace("\\","/")
     file=clist.get(clist.curselection()[0])
-    ch=file[8:9] if file[-3:]=='bin' else file[4:5]
+    if file[-3:]=='bin': ch=file[8:9] # CoMPASS output
+    else:
+        underscore=file.find('_',3,7)
+        dot=file.find('.',-4)
+        if underscore<0: ch=file[4:dot] # WaveDump output: wave0.dat
+        else: ch=file[underscore+1:dot] # WaveDump output: wave_0.dat
     script='c2r.C' if file[-3:]=='bin' else 'w2r.C'
     if file[-3:]=="bin": run=run+"/RAW"
     argument='{}("{}","{}",{},{},{},{},{},{})'.format(
