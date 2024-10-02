@@ -1,15 +1,19 @@
 <img src="share/assets/logo.png" alt="TOWARD - Tools, Objects for Waveform Analysis, Reformatting & Drawing" width="40%" align="right">
 
-[Python][] and [ROOT][] scripts for the process of digital waveforms taken with a [CAEN][] [digitizer][] and its readout programs.
+[Python][] and [ROOT][] scripts for the process of digital waveforms taken with [CAEN][] [digitizer][]s and readout programs. A similar project, [ROSA][] is created for [Struck][] [ADCs][].
 
 [Git]:https://git-scm.com/
 [Python]:https://www.python.org/
 [ROOT]:https://root.cern.ch
 [CAEN]:https://www.caen.it/
 [digitizer]:https://www.caen.it/sections/digitizer-families/
+[ROSA]: https://github.com/jintonic/rosa
+[Struck]: https://www.struck.de
+[ADCs]: https://www.struck.de/vme.htm
 
-[![Getting started](https://img.shields.io/badge/Get-started-blue?style=flat)](#getting-started)
+[![Getting started](https://img.shields.io/badge/Get-Started-blue?style=flat)](#getting-started)
 [![WaveDump config](https://img.shields.io/badge/Wave-Dump-red?style=flat)](#wavedump-configurations)
+[![Data structure](https://img.shields.io/badge/Data-Structure-yellow?style=flat)](#data-structure)
 
 ## Features
 
@@ -34,7 +38,7 @@ shows 5 non-saturated (`is==0`) waveforms (`s`: individual waveform samples, [It
 
 ## Prerequisites
 
-A [CAEN][] readout program ([WaveDump][] or [CoMPASS][]) is not needed to run the scripts here, but its output is the input for these scripts. A few example [WaveDump][] output files named as `wave0.dat` are included in the run data folder [2020](2020) so that the processing scripts can be tested without a real data taking.
+A [CAEN][] readout program ([WaveDump][] or [CoMPASS][]) is not needed to run the scripts here, but its output is the input for these scripts. A few example [WaveDump][] output files named as `wave0.dat` are included in the run data folder [2020](2020) so that the processing scripts can be tested without hardware.
 
 CERN [ROOT][] is needed to run scripts ended with `.C`. Any version can be used for MacOS or Linux. The [binary distribution of ROOT 5.34/38 for Windows](https://root.cern/releases/release-53438/) is good enough for this project and should be used before [version 6](https://root.cern/install/all_releases) for Windows becomes stable.
 
@@ -75,15 +79,12 @@ To explore them, please
 
 ### Analyzing new data
 
+In case of [CoMPASS][], simply run its GUI, enable saving binary wave data from different channels to different files. Save the project to a subdirectory in `toward`. The project folder will be automatically recognized by `toward` as a run data folder as it contains the [CoMPASS][] configuration file: `settings.xml`. After data taking, follow step 2 in the previous section.
+
 In case of [WaveDump][]:
 1. create a new run data folder named, for example, `yyyy/mmddHHMM/` in your local copy of `toward`. Note that there is no specific requirement on the naming scheme of your data folders. It will be recognized as a run data folder if it contains a [WaveDump][] configuration file [WaveDumpConfig.txt](2020/02140956/WaveDumpConfig.txt)
 2. get into the just created folder and create a [WaveDump][] configuration file there named [WaveDumpConfig.txt](2020/02140956/WaveDumpConfig.txt)
 3. run `wavedump WaveDumpConfig.txt` there to create binary output file `wave?.dat`, where `?` is the channel number. Note that in Window, you may have to run [WaveDump][] from its installation folder, its configuration file and output files need to be copied or moved from there to the newly created folder. In order for [b2r.py](b2r.py) to process the configuration file properly, please don't name it other than `WaveDumpConfig.txt`. Settings that can be tuned in the configuration file can be found in the WaveDump [manual][].
-4. follow the previous section starting from step 2.
-
-In case of [CoMPASS][]:
-1. create a new run data folder named, for example, `yyyy/mmddHHMM/` in your local copy of `toward` (Note that there is no specific requirement on the naming scheme of your data folders. It will be recognized as a run data folder if it contains a [CoMPASS][] configuration file: `settings.xml`).
-2. run [CoMPASS][], save binary data to the newly created folder, also copy its configuration file `settings.xml` to the same folder together with the data
 4. follow the previous section starting from step 2.
 
 ## Scripts
@@ -137,8 +138,8 @@ It is followed by waveform samples as 16 or 8-bit integers.
 [share/vim/syntax/WDcfg.vim](share/vim/syntax/WDcfg.vim) enables [syntax highlighting][1] of a [WaveDump][] configuration file in [vim][]. It can be installed the following way in Linux or Mac:
 
 ```sh
-$ mkdir -p ~/.vim/after/syntax
-$ cp share/vim/syntax/WDcfg.vim ~/.vim/after/syntax
+mkdir -p ~/.vim/after/syntax
+cp share/vim/syntax/WDcfg.vim ~/.vim/after/syntax
 ```
 
 If you don't have file `~/.vim/after/filetype.vim`, create one and put the following content in it to let [vim][] recognize the `filetype` of `WaveDumpConfig.txt` as `WDcfg` instead of `text`:
@@ -162,3 +163,4 @@ A [WaveDump][] configuration file may look like the following in vim with [synta
 [DT5751]:https://www.caen.it/products/dt5751/
 [DT5720]:https://www.caen.it/products/dt5720/
 [manual]:https://usermanual.wiki/Document/UM2091WaveDumpUserManualrev13.87092449/view
+
