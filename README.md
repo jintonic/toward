@@ -20,7 +20,7 @@
 - Works with [WaveDump][] and [CoMPASS][] without any modification of code on both sides
 - All scripts can be run directly in Linux, Mac and Windows without compilation and installation
 - GUI across three major platforms
-- Data are saved as basic types in [ROOT][] [TTree][] [ntuple][]s, which can be easily open without loading extra libraries defining complicated data structure. [Uproot4][] can be used to load the data for analysis in [Python][]
+- Data are saved as basic types in [ROOT][] [TTree][] [ntuple][]s, which can be easily open without loading extra libraries defining complicated data structure. [Uproot][] can be used to load the data for analysis in [Python][]
 - Super short variable names for quick analysis using [ROOT][] [TTree][]::[Draw][] function in a [ROOT interactive session](https://root.cern.ch/root/html534/guides/users-guide/GettingStarted.html). For example,
 ```cpp
 root[1] t->Draw("s:Iteration$","is==0","l",5,2)
@@ -32,7 +32,7 @@ shows 5 non-saturated (`is==0`) waveforms (`s`: individual waveform samples, [It
 [tree]:https://root.cern.ch/doc/master/classTTree.html#addcoltoexistingtree
 [TTree]: https://root.cern.ch/root/htmldoc/guides/users-guide/Trees.html
 [ntuple]:https://en.wikipedia.org/wiki/Tuple
-[Uproot4]:https://github.com/scikit-hep/uproot4
+[Uproot]: https://pypi.org/project/uproot
 [Draw]:https://root.cern.ch/doc/master/classTTree.html#a73450649dc6e54b5b94516c468523e45
 [ROOT script]:https://root.cern.ch/root/htmldoc/guides/users-guide/Cling.html
 
@@ -42,18 +42,14 @@ A [CAEN][] readout program ([WaveDump][] or [CoMPASS][]) is not needed to run th
 
 CERN [ROOT][] is needed to run scripts ended with `.C`. Any version can be used for MacOS or Linux. The [binary distribution of ROOT 5.34/38 for Windows](https://root.cern/releases/release-53438/) is good enough for this project and should be used before [version 6](https://root.cern/install/all_releases) for Windows becomes stable.
 
-[Python][] is available for Linux, Mac and Windows. [Python][] packages [Uproot4][], [awkward][] and [matplotlib][] are needed. They can be installed as a normal user using the [pip][] command:
+[Python][] is available for Linux, Mac and Windows. [Python][] packages [uproot][] and [matplotlib][] are needed. They can be installed as a normal user using the [pip][] command:
 
 ```sh
-$ pip install --upgrade pip # upgrade pip
-$ pip install uproot4
-$ pip install awkward
-$ pip install matplotlib
+python3 -m pip install uproot matplotlib
 ```
 
 [WaveDump]:https://www.caen.it/products/caen-wavedump/
 [CoMPASS]:https://www.caen.it/products/compass/
-[awkward]:https://pypi.org/project/awkward/
 [matplotlib]:https://matplotlib.org/
 [pip]:https://pypi.org/project/pip/
 
