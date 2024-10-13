@@ -9,7 +9,7 @@ b:          previous event
 q:          quit
 '''
 
-# get run folder
+# get data folder
 from sys import argv
 if len(argv)<2: print(usage); exit()
 folder=argv[1]
@@ -28,7 +28,7 @@ for ch in range(8):
         if nevt<n[ch]: nevt=n[ch]
 if nfile<1: print("no valid root file in "+folder+", quit"); exit()
 
-title="There are "+str(nevt)+" events in run folder "+folder
+title="There are "+str(nevt)+" events in data folder "+folder
 title+=" (press h for help, q to quit)"
 from tkinter import Tk, Label, Entry, END, TOP, LEFT, BOTH
 root = Tk(); root.wm_title(title)
@@ -38,7 +38,7 @@ from matplotlib.figure import Figure
 fig=Figure(); ax=fig.add_subplot()
 line=[0]*8
 for ch in range(8):
-    if n[ch]>0: line[ch],=ax.plot(t[ch][b's'][0],label="channel "+str(ch))
+    if n[ch]>0: line[ch],=ax.plot(t[ch]['s'][0],label="channel "+str(ch))
 ax.legend()
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 canvas = FigureCanvasTkAgg(fig, master=root); canvas.draw()
@@ -66,7 +66,7 @@ def jump_to_event(event=None):
     # update canvas
     for ch in range(8):
         if line[ch]==0:continue
-        if line[ch].get_visible(): line[ch].set_ydata(t[ch][b's'][int(evt)])
+        if line[ch].get_visible(): line[ch].set_ydata(t[ch]['s'][int(evt)])
     ax.relim(); ax.autoscale_view(); ax.legend(); canvas.draw()
 # https://stackoverflow.com/questions/47475783
 evtSpecifier.bind('<Return>', jump_to_event)
