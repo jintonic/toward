@@ -9,7 +9,7 @@ root.wm_title('Convert CAEN DAQ binary output to ROOT format (press q to quit)')
 def quit_gui(event=None): root.quit(); root.destroy()
 root.bind('q', quit_gui)
 
-Label(root, text="Select run folder:").grid(column=0, row=0, sticky='nw')
+Label(root, text="Select data folder:").grid(column=0, row=0, sticky='nw')
 rlist=Listbox(root, height=8,
 # https://anzeljg.github.io/rin2/book2/2405/docs/tkinter/listbox.html
         selectbackground='orchid', selectforeground='white',
