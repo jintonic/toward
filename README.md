@@ -19,7 +19,7 @@
 
 - Works with [WaveDump][] and [CoMPASS][] without any modification of code on both sides
 - All scripts can be run directly in Linux, Mac and Windows without compilation and installation
-- GUI across three major platforms
+- GUI using [tkinter][] across three major platforms
 - Data are saved as basic types in [ROOT][] [TTree][] [ntuple][]s, which can be easily open without loading extra libraries defining complicated data structure. [Uproot][] can be used to load the data for analysis in [Python][]
 - Super short variable names for quick analysis using [ROOT][] [TTree][]::[Draw][] function in a [ROOT interactive session](https://root.cern.ch/root/html534/guides/users-guide/GettingStarted.html). For example,
 ```cpp
@@ -48,30 +48,36 @@ CERN [ROOT][] is needed to run scripts ended with `.C`. Any version can be used 
 python3 -m pip install uproot matplotlib
 ```
 
+[tkinter][] and its dependency [Tk][] are needed to provide GUI. On macOS, run `brew install python-tk` to install them. For Debian/Ubuntu, run `sudo apt-get install python3-tk`. For Fedora/AlmaLinux, run `sudo dnf install python3-tkinter`. For Arch Linux, run `sudo pacman -S tk`. For Windows, tick "Tcl/Tk and IDLE" in the "optional features" list of the [Python][] installer.
+
 [WaveDump]:https://www.caen.it/products/caen-wavedump/
 [CoMPASS]:https://www.caen.it/products/compass/
 [matplotlib]:https://matplotlib.org/
 [pip]:https://pypi.org/project/pip/
+[tkinter]:https://docs.python.org/library/tkinter.html
+[Tk]:https://www.tcl.tk/
 
 ## Getting started
 
 ### Exploring example data
 
-A few example [WaveDump][] output files named as `wave0.dat`, etc., are included in the folder [2020](2020) to demonstrate the usage of the processing scripts:
+A few example [WaveDump][] output files named as `wave0.dat`, etc., are included in the folder [data](data) to demonstrate the usage of the processing scripts:
 
-- [2020/02140956](2020/02140956) contains coincidently triggered waveforms from two SiPMs sandwiching a BGO crystal taken with a [DT5751][] digitizer
-- [2020/06272158](2020/06272158) contains waveforms from a Hamamatsu SiPM module taken with a [DT5751][] digitizer
-- [2020/12021523](2020/12021523) contains waveforms from a HPGe detector taken with a [DT5720][] digitizer
+- [SiPM/coincidence](data/SiPM/coincidence) contains coincidently triggered waveforms from two SiPMs sandwiching a BGO crystal taken with a [DT5751][] digitizer
+- [SiPM/2006272158](data/SiPM/2006272158) contains waveforms from a Hamamatsu SiPM module taken with a [DT5751][] digitizer
+- [HPGe/2012021523](data/HPGe/2012021523) contains waveforms from a HPGe detector taken with a [DT5720][] digitizer
 
 To explore them, please
 
-1. download the package from <https://github.com/jintonic/toward.git>
+1. download the package from <https://github.com/jintonic/toward>
 2. get to the `toward` directory, double click [b2r.py](b2r.py) to convert `wave?.dat` to `wave?.root`. The script can also be run in a terminal as `python3 b2r.py` or simply `./b2r.py`. Note that in [Git Bash][] or [MobaXterm][], the command has to be changed to `winpty python b2r.py` to enable [running Python installed in Windows in a Linux-like terminal](https://stackoverflow.com/questions/48199794/winpty-and-git-bash)
-3. click `Show` button on the window created by running [b2r.py](b2r.py) to show waveforms in newly created `wave?.root` using script [show.py](show.py)
-4. use other scripts to process the generated root file
+3. click `Show` button on the [Tkinter][] window created by [b2r.py](b2r.py) to show individual waveforms in newly created `wave?.root` using script [show.py](show.py)
+4. click `Analyze` button on the [Tkinter][] window created by [b2r.py](b2r.py) to open a ROOT [TTreeViewer][] to draw statistical distributions of the data using ROOT script [analyze.C](analyze.C)
+5. use other scripts to process the generated root file
 
 [Git Bash]:https://gitforwindows.org/
 [MobaXterm]:https://mobaxterm.mobatek.net/
+[TTreeViewer]:https://root.cern.ch/doc/master/classTTreeViewer.html
 
 ### Analyzing new data
 
@@ -95,14 +101,14 @@ In case of [WaveDump][]:
 
 ## Data structure
 
-The way to organize digital waveform data depends on analysis tools and ecosystem to be used. A [class][] named `Waveform` or `Waveforms` may not be the best choice. Generally speaking, data structures are the way we organize information on our computer; it should involve things more than just [data members][] of a [class][]. For example, a well designed directory structure and output file naming scheme may simplify the coding significantly. They should be considered as a part of data structure. [WaveDump][] saves waveforms from each channel separately, for example, `wave0.dat` is from channel 0. In `TOWARD`, they are organized in folders named as `yyyy/mmddHHMM/`. You can increase the level of subfolders, for example, `yyyy/mm/dd/HHMM/`. As long as there is a [WaveDump][] configuration file `WaveDumpConfig.txt` (or a [CoMPASS][] one: `settings.xml`) saved in it, it will be recognized as a data directory.
+The way to organize digital waveform data depends on analysis tools and ecosystem to be used. A [class][] named `Waveform` or `Waveforms` may not be the best choice. Generally speaking, data structures are the way we organize information on our computer; it should involve things more than just [data members][] of a [class][]. For example, a well designed directory structure and output file naming scheme may simplify the coding significantly. They should be considered as a part of data structure. [WaveDump][] saves waveforms from each channel separately, for example, `wave0.dat` is from channel 0. In `TOWARD`, users have the freedom to organize their data whichever way they like. For example, they can be organized in folders named as `yyyy/mmddHHMM/`, or `data/detector/run/`. As long as there is a [WaveDump][] configuration file `WaveDumpConfig.txt` (or a [CoMPASS][] one: `settings.xml`) saved in it, it will be recognized as a data directory.
 
 [class]:https://en.wikipedia.org/wiki/Class_(computer_programming)
 [data members]:http://www.cplusplus.com/doc/tutorial/classes/
 
 ## WaveDump configurations
 
-- [2020/02140956/WaveDumpConfig.txt](2020/02140956/WaveDumpConfig.txt) can be used as an example [WaveDump][] configuration file that can be copied to other folders as a starting point for customization. It also demonstrates how to set up coincident trigger among channels
+[data/SiPM/coincidence/WaveDumpConfig.txt](data/SiPM/coincidence/WaveDumpConfig.txt) can be used as an example [WaveDump][] configuration file that can be copied to other folders as a starting point for customization. It also demonstrates how to set up coincident trigger among channels
 
 ### Output file settings
 
