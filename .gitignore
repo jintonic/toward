@@ -10,3 +10,4 @@ run/*
 *.jpg
 *.pdf
 *.png
+.DS_Store
