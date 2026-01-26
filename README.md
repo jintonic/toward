@@ -45,10 +45,13 @@ CERN [ROOT][] is needed to run scripts ended with `.C`. Any version can be used 
 [Python][] is available for Linux, Mac and Windows. [Python][] packages [uproot][] and [matplotlib][] are needed. They can be installed as a normal user using the [pip][] command:
 
 ```sh
+# on Linux or macOS
 python3 -m pip install uproot matplotlib
+# on Windows
+py -m pip install uproot matplotlib
 ```
 
-[tkinter][] and its dependency [Tk][] are needed to provide GUI. On macOS, run `brew install python-tk` to install them. For Debian/Ubuntu, run `sudo apt-get install python3-tk`. For Fedora/AlmaLinux, run `sudo dnf install python3-tkinter`. For Arch Linux, run `sudo pacman -S tk`. For Windows, tick "Tcl/Tk and IDLE" in the "optional features" list of the [Python][] installer.
+[tkinter][] and its dependency [Tk][] are needed to provide GUI. On macOS, run `brew install python-tk` to install them. For Debian/Ubuntu, run `sudo apt-get install python3-tk`. For Fedora/AlmaLinux, run `sudo dnf install python3-tkinter`. For Arch Linux, run `sudo pacman -S tk`. For Windows, they are included in the standard Python installation.
 
 [WaveDump]:https://www.caen.it/products/caen-wavedump/
 [CoMPASS]:https://www.caen.it/products/compass/
@@ -65,7 +68,7 @@ A few example [WaveDump][] output files named as `wave0.dat`, etc., are included
 
 - [SiPM/coincidence](data/SiPM/coincidence) contains coincidently triggered waveforms from two SiPMs sandwiching a BGO crystal taken with a [DT5751][] digitizer
 - [SiPM/2006272158](data/SiPM/2006272158) contains waveforms from a Hamamatsu SiPM module taken with a [DT5751][] digitizer
-- [HPGe/2012021523](data/HPGe/2012021523) contains waveforms from a HPGe detector taken with a [DT5720][] digitizer
+- [HPGe/WaveDump](data/HPGe/WaveDump) contains waveforms from a HPGe detector taken with a [DT5720][] digitizer
 
 To explore them, please
 
